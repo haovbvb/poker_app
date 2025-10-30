@@ -1,0 +1,38 @@
+{
+  "@@locale": "en",
+  "appTitle": "Merchant",
+  "welcomeMessage": "Welcome to Merchant!",
+  "logout": "Logout",
+  "tabHome": "Home",
+  "@tabHome": {
+    "description": "Label for the home tab in the bottom navigation bar."
+  },
+  "tabWork": "Work",
+  "@tabWork": {
+    "description": "Label for the work tab in the bottom navigation bar."
+  },
+  "tabMe": "Me",
+  "@tabMe": {
+    "description": "Label for the profile tab in the bottom navigation bar."
+  },
+  "homeTitle": "Overview",
+  "@homeTitle": {
+    "description": "Title displayed in the app bar when the home tab is active."
+  },
+  "workTitle": "Workbench",
+  "@workTitle": {
+    "description": "Title displayed in the app bar when the work tab is active."
+  },
+  "meTitle": "Profile",
+  "@meTitle": {
+    "description": "Title displayed in the app bar when the profile tab is active."
+  },
+  "workInProgress": "Your workbench content will appear here soon.",
+  "@workInProgress": {
+    "description": "Placeholder text for the work tab body."
+  },
+  "profileGreeting": "Manage your personal settings here.",
+  "@profileGreeting": {
+    "description": "Helper text in the profile tab."
+  }
+}

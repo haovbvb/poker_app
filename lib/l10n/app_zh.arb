@@ -1,0 +1,38 @@
+{
+  "@@locale": "zh",
+  "appTitle": "商家端",
+  "welcomeMessage": "欢迎使用商家端！",
+  "logout": "退出登录",
+  "tabHome": "首页",
+  "@tabHome": {
+    "description": "底部导航中首页标签的文案"
+  },
+  "tabWork": "工作台",
+  "@tabWork": {
+    "description": "底部导航中工作台标签的文案"
+  },
+  "tabMe": "我的",
+  "@tabMe": {
+    "description": "底部导航中个人中心标签的文案"
+  },
+  "homeTitle": "概览",
+  "@homeTitle": {
+    "description": "首页激活时 AppBar 显示的标题"
+  },
+  "workTitle": "工作台",
+  "@workTitle": {
+    "description": "工作台激活时 AppBar 显示的标题"
+  },
+  "meTitle": "个人中心",
+  "@meTitle": {
+    "description": "个人中心激活时 AppBar 显示的标题"
+  },
+  "workInProgress": "工作台内容即将上线，敬请期待。",
+  "@workInProgress": {
+    "description": "工作台页面的占位文案"
+  },
+  "profileGreeting": "在这里管理你的个人信息。",
+  "@profileGreeting": {
+    "description": "个人中心页面的辅助文案"
+  }
+}
