@@ -160,6 +160,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage your personal settings here.'**
   String get profileGreeting;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get login;
+
+  /// No description provided for @loginHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your username and password to continue.'**
+  String get loginHint;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get nameLabel;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get nameRequired;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordTooShort;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

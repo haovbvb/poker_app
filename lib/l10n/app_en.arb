@@ -34,5 +34,12 @@
   "profileGreeting": "Manage your personal settings here.",
   "@profileGreeting": {
     "description": "Helper text in the profile tab."
-  }
+  },
+  "login": "Sign In",
+  "loginHint": "Enter your username and password to continue.",
+  "nameLabel": "Username",
+  "nameRequired": "Username is required",
+  "passwordLabel": "Password",
+  "passwordRequired": "Password is required",
+  "passwordTooShort": "Password must be at least 6 characters"
 }

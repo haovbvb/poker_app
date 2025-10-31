@@ -40,4 +40,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileGreeting => 'Manage your personal settings here.';
+
+  @override
+  String get login => 'Sign In';
+
+  @override
+  String get loginHint => 'Enter your username and password to continue.';
+
+  @override
+  String get nameLabel => 'Username';
+
+  @override
+  String get nameRequired => 'Username is required';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters';
 }

@@ -7,7 +7,7 @@ class BaseTheme {
   static const Color honeyGold = Color(0xFFF8C91C); // 主色
   static const Color hiveBrown = Color(0xFF8D6E63); // 辅助色
   static const Color energyOrange = Color(0xFFEF6C00); // 点缀色
-  static const Color paperIvory = Color(0xFFFFF8E1); // 背景
+  static const Color paperIvory = Color(0xFFFFFFFF); // 背景
   static const Color textDark = Color(0xFF333333); // 文字
 
   static ThemeData lightTheme({TargetPlatform? platform}) {

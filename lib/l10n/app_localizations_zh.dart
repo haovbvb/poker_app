@@ -40,4 +40,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get profileGreeting => '在这里管理你的个人信息。';
+
+  @override
+  String get login => '登录';
+
+  @override
+  String get loginHint => '请输入用户名和密码继续。';
+
+  @override
+  String get nameLabel => '用户名';
+
+  @override
+  String get nameRequired => '请输入用户名';
+
+  @override
+  String get passwordLabel => '密码';
+
+  @override
+  String get passwordRequired => '请输入密码';
+
+  @override
+  String get passwordTooShort => '密码长度至少 6 位';
 }

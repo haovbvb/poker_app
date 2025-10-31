@@ -6,13 +6,24 @@ class BaseResponse<T> {
   BaseResponse({required this.code, required this.message, this.data});
 
   factory BaseResponse.fromJson(
-      Map<String, dynamic> json, T Function(dynamic) fromJsonT) {
+    Map<String, dynamic> json,
+    T Function(dynamic) fromJsonT,
+  ) {
+    final rawCode = json['code'] ?? json['status'] ?? json['statusCode'] ?? 0;
+    final resolvedCode = rawCode is int
+        ? rawCode
+        : int.tryParse(rawCode.toString()) ?? 0;
+
+    final resolvedMessage =
+        (json['message'] ?? json['msg'] ?? json['error'] ?? '').toString();
+    final rawData = json.containsKey('data') ? json['data'] : json['result'];
+
     return BaseResponse(
-      code: json['code'] ?? 0,
-      message: json['message'] ?? '',
-      data: json['data'] != null ? fromJsonT(json['data']) : null,
+      code: resolvedCode,
+      message: resolvedMessage,
+      data: rawData != null ? fromJsonT(rawData) : null,
     );
   }
 
-  bool get isSuccess => code == 200;
+  bool get isSuccess => code == 0 || code == 200;
 }
