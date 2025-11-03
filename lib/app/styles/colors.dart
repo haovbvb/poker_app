@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// 颜色令牌：中性色、语义色、分割线与文本对比色工具
-class BeeColors {
+class AppColors {
   // 中性文本
   static const Color primaryText = Color(0xFF111827); // 黑灰 900
   static const Color secondaryText = Color(0xFF6B7280); // 灰 500

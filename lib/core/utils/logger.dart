@@ -9,19 +9,19 @@ String _ts() {
   return '${two(now.hour)}:${two(now.minute)}:${two(now.second)}.${three(now.millisecond)}';
 }
 
-void _log(LogLevel level, String tag, String msg) {
+void _log(LogLevel level, String msg) {
   final lv = switch (level) {
     LogLevel.info => 'I',
     LogLevel.warn => 'W',
     LogLevel.error => 'E',
   };
-  debugPrint('[$lv ${_ts()}][$tag] $msg');
+  debugPrint('[$lv ${_ts()}] $msg');
 }
 
-void logI(String tag, String msg) => _log(LogLevel.info, tag, msg);
-void logW(String tag, String msg) => _log(LogLevel.warn, tag, msg);
-void logE(String tag, String msg, [Object? err, StackTrace? st]) {
-  _log(LogLevel.error, tag, msg);
+void logI(String msg) => _log(LogLevel.info, msg);
+void logW(String msg) => _log(LogLevel.warn, msg);
+void logE(String msg, [Object? err, StackTrace? st]) {
+  _log(LogLevel.error, msg);
   if (err != null) debugPrint('  error: $err');
   if (st != null) debugPrint('  stack: $st');
 }

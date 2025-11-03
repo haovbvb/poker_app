@@ -15,6 +15,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -26,7 +27,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final authState = ref.watch(authNotifierProvider);
+    // 订阅鉴权状态，确保页面在登录成功时能及时响应路由跳转。
+    ref.watch(authNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.login)),
@@ -85,8 +87,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: authState.isLoading ? null : _onSubmit,
-                  child: authState.isLoading
+                  onPressed: _isSubmitting ? null : _onSubmit,
+                  child: _isSubmitting
                       ? const SizedBox.square(
                           dimension: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
@@ -111,6 +113,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final password = _passwordController.text.trim();
     final notifier = ref.read(authNotifierProvider.notifier);
 
-    await notifier.login(name: name, password: password);
+    setState(() => _isSubmitting = true);
+    try {
+      await notifier.login(name: name, password: password);
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 }

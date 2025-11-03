@@ -4,7 +4,7 @@
   "case-sensitive": false,
   "roots": [{
     "type": "directory",
-    "name": "/Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphoneos/shared_preferences_foundation/shared_preferences_foundation.framework/Modules",
+    "name": "/Users/ping/Desktop/work/merchant_app/ios/build/Debug-iphoneos/shared_preferences_foundation/shared_preferences_foundation.framework/Modules",
     "contents": [{
       "type": "file",
       "name": "module.modulemap",
@@ -13,7 +13,7 @@
     },
     {
     "type": "directory",
-    "name": "/Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphoneos/shared_preferences_foundation/shared_preferences_foundation.framework/Headers",
+    "name": "/Users/ping/Desktop/work/merchant_app/ios/build/Debug-iphoneos/shared_preferences_foundation/shared_preferences_foundation.framework/Headers",
     "contents": [{
       "type": "file",
       "name": "shared_preferences_foundation-Swift.h",

@@ -19,11 +19,7 @@ class ProfileTab extends ConsumerWidget {
           ElevatedButton(
             onPressed: () async {
               await ref.read(authNotifierProvider.notifier).logout();
-              if (context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(context.l10n.logout)));
-              }
+              
             },
             child: Text(context.l10n.logout),
           ),

@@ -27,7 +27,7 @@ class AppDivider {
   static Divider thin({EdgeInsetsGeometry? padding}) => Divider(
         height: 1,
         thickness: 1,
-        color: BeeColors.divider,
+        color: AppColors.divider,
       );
 
   static Divider short({double indent = 0, double endIndent = 0}) => Divider(
@@ -35,7 +35,7 @@ class AppDivider {
         thickness: 1,
         indent: indent,
         endIndent: endIndent,
-        color: BeeColors.divider,
+        color: AppColors.divider,
       );
 }
 
@@ -91,7 +91,7 @@ class AppTextTokens {
   static TextStyle label(BuildContext ctx) =>
       Theme.of(ctx).textTheme.labelMedium?.copyWith(
             fontSize: 12,
-            color: BeeColors.black54,
+            color: AppColors.black54,
           ) ??
       const TextStyle(fontSize: 12, color: Colors.black54);
 }

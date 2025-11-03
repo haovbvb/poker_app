@@ -6,6 +6,7 @@ import 'package:merchant_app/core/constants/storage_keys.dart';
 import 'package:merchant_app/core/utils/hash_utils.dart';
 import 'package:merchant_app/core/utils/toast.dart';
 import 'package:merchant_app/features/login/models/auth_result.dart';
+import 'package:merchant_app/features/login/models/auth_session.dart';
 import 'package:merchant_app/features/login/models/auth_state.dart';
 import 'package:merchant_app/network/api_client.dart';
 import 'package:merchant_app/network/api_path.dart';
@@ -24,17 +25,11 @@ class AuthNotifier extends Notifier<AuthState> {
 
   @override
   AuthState build() {
-    _bootstrap();
-    return AuthState.initialLoading();
+    return AuthState();
   }
 
   /// 执行登录流程，并在成功后保存 token。
   Future<void> login({required String name, required String password}) async {
-    state = state.copyWith(
-      isLoading: true,
-      updateError: true,
-      errorMessage: null,
-    );
     try {
       final hashedPassword = HashUtils.md5Lower32(password);
       final response = await _apiService.post<AuthResult>(
@@ -44,79 +39,58 @@ class AuthNotifier extends Notifier<AuthState> {
       );
 
       if (!response.isSuccess) {
-        final message = response.message.isNotEmpty ? response.message : '请求失败';
-        showToast(message);
-        state = state.copyWith(
-          isLoading: false,
-          updateError: true,
-          errorMessage: message,
-        );
         return;
       }
 
-      final token = response.data?.token ?? '';
-      if (token.isEmpty) {
-        throw NetworkExceptions('缺少 token');
+      final authResult = response.result;
+      if (authResult == null || authResult.token.isEmpty) {
+        showToast('缺少 token');
+        return;
       }
 
-      await _persistToken(token);
-
-      state = state.copyWith(
-        updateToken: true,
-        token: token,
-        isLoading: false,
-        updateError: true,
-        errorMessage: null,
-      );
+      await updateSession(authResult);
       Future.microtask(AppRouter.goHome);
     } catch (e) {
-      final message = e is NetworkExceptions ? e.message : e.toString();
-      showToast(message);
-      state = state.copyWith(
-        isLoading: false,
-        updateError: true,
-        errorMessage: message,
-      );
+      // 全局已处理提示，这里仅确保状态不变。
     }
   }
 
   /// 清除 token 并重置为未登录状态。
   Future<void> logout() async {
-    await _clearToken();
-    state = state.copyWith(
-      updateToken: true,
-      token: null,
-      isLoading: false,
-      updateError: true,
-      errorMessage: null,
-    );
-    Future.microtask(AppRouter.goLogin);
+    try {
+      final response = await _apiService.post<AuthResult>(
+        ApiPath.logout,
+        parser: _parseAuthResult,
+      );
+
+      if (!response.isSuccess) {
+        return;
+      }
+
+      await clearSession();
+      Future.microtask(AppRouter.goLogin);
+    } catch (_) {
+      // 全局已处理提示。
+    }
   }
 
-  /// 启动时尝试恢复本地 token，提升冷启动体验。
-  Future<void> _bootstrap() async {
-    try {
-      final token = await _readToken();
-      state = state.copyWith(
-        updateToken: true,
-        token: token,
-        isLoading: false,
-        updateError: true,
-        errorMessage: null,
-      );
-      if (token != null && token.isNotEmpty) {
-        Future.microtask(AppRouter.goHome);
-      } else {
-        Future.microtask(AppRouter.goLogin);
-      }
-    } catch (e) {
-      final message = e is NetworkExceptions ? e.message : e.toString();
-      state = state.copyWith(
-        isLoading: false,
-        updateError: true,
-        errorMessage: message,
-      );
-    }
+  Future<void> updateSession(AuthResult result) async {
+    AuthSession.instance.update(result);
+    await _persistToken(result.token);
+    state = AuthState(token: result.token);
+  }
+
+  Future<void> clearSession() async {
+    await _clearToken();
+    state = const AuthState();
+  }
+
+  Future<String?> loadTokenFromStorage() async {
+    return _readToken();
+  }
+
+  void setToken(String token) {
+    state = AuthState(token: token);
   }
 
   AuthResult _parseAuthResult(dynamic data) {
@@ -146,5 +120,6 @@ class AuthNotifier extends Notifier<AuthState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(StorageKeys.authToken);
     ApiClient().clearAuthToken();
+    AuthSession.instance.clear();
   }
 }

@@ -1,64 +1,103 @@
 # merchant_app
 
-A new Flutter project.
+Flutter 商户侧应用，整合 Riverpod 状态管理、Dio 网络封装以及多语言支持，提供登录、首页、工作台与“我的”等核心模块。
 
-## Getting Started
+## 环境要求
 
-This project is a starting point for a Flutter application.
+- Flutter 3.24+（Dart 3.9+）
+- Xcode 15 / Android Studio（编译 iOS/Android）
+- 已配置好基础 Flutter 开发环境（`flutter doctor` 通过）
 
-A few resources to get you started if this is your first Flutter project:
+## 快速开始
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+# 安装依赖
+flutter pub get
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# 运行 iOS 模拟器示例
+flutter run -d "iPhone 16 Plus"
 
-## 目录结构总览
+# 或指定 Android 设备
+flutter run -d <device-id>
+```
 
-``
+首次登录前，请向后端申请可用的账号密码。密码会在客户端侧通过 MD5（32 位小写）处理后再发送。
 
+## 主要特性
+
+- **Riverpod Notifier**：驱动全局登录状态、底部导航索引等。
+- **Dio 封装**：统一 Accept-Language、AccessToken 头部，自动弹出 HUD、Toast 处理错误。
+- **GoRouter**：控制登录态路由跳转，支持启动时刷新 token。
+- **多语言**：`flutter gen-l10n` 生成中英文文案，网络请求携带当前语言。
+- **自定义底部导航**：资产化图标，选中态与未选中态分离，支持多倍图资源。
+
+## 目录结构
+
+```
 lib/
- ├── main.dart
+ ├── main.dart                   # 应用入口
  ├── app/
- │    ├── app.dart              # App 根组件（MaterialApp / router）
- │    ├── router.dart           # 路由定义 (go_router / auto_route)
- │    ├── theme.dart            # 全局主题、颜色、字体
- │    └── localization.dart     # 国际化支持
+ │    ├── app.dart               # 顶层 MaterialApp（含 Riverpod）
+ │    ├── router.dart            # GoRouter 路由表
+ │    └── theme.dart             # 全局主题与颜色
  │
- ├── core/                      # 核心通用模块（不依赖具体业务）
- │    ├── constants/            # 常量、枚举、AppConfig
- │    ├── utils/                # 工具函数（日期、格式化、加密等）
- │    ├── services/             # 系统服务（网络、存储、日志等）
- │    ├── error/                # 全局异常处理、自定义错误类型
- │    └── widgets/              # 全局通用组件（如 AppButton、LoadingView）
+ ├── core/                       # 通用工具与常量
+ │    ├── constants/             # 常量（StorageKeys 等）
+ │    ├── utils/                 # HUD、日志、加密、Toast
+ │    └── widgets/               # 全局可复用组件
  │
- ├── data/                      # 数据访问层（数据库、本地缓存、远程接口）
- │    ├── db/                   # Drift/SQLite 数据库定义、DAO
- │    ├── models/               # 数据模型（如 User、Message）
- │    ├── repositories/         # 仓库层（封装本地/远程数据访问逻辑）
- │    └── network/              # 网络请求封装（Dio/Supabase/Http）
+ ├── data/                       # 网络层（Dio 封装、请求路径）
+ │    └── network/
+ │         ├── api_client.dart   # Dio 单例、拦截器
+ │         ├── api_service.dart  # GET/POST 封装
+ │         ├── api_path.dart     # 后端接口常量
+ │         └── base_response.dart# 通用响应解析
  │
- ├── features/                  # 按功能模块划分业务（推荐）
- │    ├── auth/                 # 登录注册模块
- │    │    ├── data/            # 模块专属数据（可选）
- │    │    ├── providers/       # Riverpod 状态提供器
- │    │    ├── views/           # 页面（LoginPage / RegisterPage）
- │    │    └── widgets/         # 模块专属小组件
- │    │
- │    ├── chat/
- │    ├── settings/
- │    └── stats/
+ ├── features/                   # 按业务划分模块
+ │    ├── login/                 # 登录与鉴权
+ │    │    ├── models/           # AuthState / AuthResult / AuthSession
+ │    │    └── providers/        # AuthNotifier
+ │    ├── home/
+ │    ├── work/
+ │    └── me/
  │
- ├── l10n/                      # Flutter 本地化（由 flutter gen-l10n 生成）
- │    └── app_en.arb
- │    └── app_zh.arb
- │
- ├── gen/                       # 自动生成代码（如 json_serializable / drift）
- │    └── drift_database.g.dart
- │
- └── bootstrap.dart              # 程序启动入口，负责初始化（DB、依赖注入、日志等）
+ ├── l10n/                       # 多语言资源与生成代码
+ └── test/                       # Widget / 单元测试样例
+```
 
+## 鉴权流程
 
-``
+1. 登录请求成功后，`AuthNotifier` 会：
+   - 通过 `AuthResult` 解析完整用户信息；
+   - 调用 `AuthSession` 单例缓存会话；
+   - 持久化刷新后的 token 并跳转首页。
+2. 应用启动时若检测到本地 token，会调用 `/admin/sys/account/refreshToken` 接口刷新，成功则继续保留登录态，失败则清空会话并返回登录页。
+3. 登出接口成功后会清除本地 token、Session，并导航回登录页。
+
+## 资源管理
+
+- 底部标签栏图标位于 `assets/images/`，支持 `2.0x/`、`3.0x/` 变体。
+- 如需新增图片，请同步更新 `pubspec.yaml` 的 `assets` 配置后执行 `flutter pub get`。
+
+## 开发建议
+
+- 新增接口：在 `api_path.dart` 定义路径 -> 在 `ApiService` 调用 -> 根据需要新增模型。
+- 新增功能模块：在 `features/` 下建立子目录，包含 `models/providers/views/widgets` 等子结构。
+- 若需调试网络，请关注控制台输出（`ApiClient` 已内置请求/响应日志）。
+
+## 常用命令
+
+```bash
+# 代码格式化
+flutter format lib test
+
+# 运行测试
+flutter test
+
+# 生成多语言文件
+flutter gen-l10n
+```
+
+---
+
+欢迎根据业务需求扩展 README，补充 API 文档、设计稿链接或迭代计划。若发现文档与实现不一致，请优先以代码为准并提更新。

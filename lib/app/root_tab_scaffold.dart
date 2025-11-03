@@ -20,22 +20,22 @@ class RootTabScaffold extends ConsumerWidget {
       _TabConfig(
         title: l10n.homeTitle,
         label: l10n.tabHome,
-        icon: Icons.home_outlined,
-        activeIcon: Icons.home,
+        iconAsset: 'assets/images/tab_1.png',
+        activeIconAsset: 'assets/images/tab_1_selected.png',
         body: const HomeTab(),
       ),
       _TabConfig(
         title: l10n.workTitle,
         label: l10n.tabWork,
-        icon: Icons.work_outline,
-        activeIcon: Icons.work,
+        iconAsset: 'assets/images/tab_2.png',
+        activeIconAsset: 'assets/images/tab_2_selected.png',
         body: const WorkTab(),
       ),
       _TabConfig(
         title: l10n.meTitle,
         label: l10n.tabMe,
-        icon: Icons.person_outline,
-        activeIcon: Icons.person,
+        iconAsset: 'assets/images/tab_3.png',
+        activeIconAsset: 'assets/images/tab_3_selected.png',
         body: const ProfileTab(),
       ),
     ];
@@ -59,8 +59,12 @@ class RootTabScaffold extends ConsumerWidget {
           items: tabs
               .map(
                 (tab) => BottomNavigationBarItem(
-                  icon: Icon(tab.icon),
-                  activeIcon: Icon(tab.activeIcon),
+                  icon: Image.asset(tab.iconAsset),
+                  activeIcon: Image.asset(
+                    tab.activeIconAsset ?? tab.iconAsset,
+                    // width: 24,
+                    // height: 24,
+                  ),
                   label: tab.label,
                 ),
               )
@@ -82,14 +86,14 @@ class _TabConfig {
   const _TabConfig({
     required this.title,
     required this.label,
-    required this.icon,
-    required this.activeIcon,
+    required this.iconAsset,
+    this.activeIconAsset,
     required this.body,
   });
 
   final String title;
   final String label;
-  final IconData icon;
-  final IconData activeIcon;
+  final String iconAsset;
+  final String? activeIconAsset;
   final Widget body;
 }

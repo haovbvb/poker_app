@@ -1,7 +1,6 @@
-import 'package:merchant_app/features/login/models/auth_result.dart';
+import 'package:merchant_app/core/utils/toast.dart';
 
 import 'api_client.dart';
-import 'api_path.dart';
 import 'base_response.dart';
 
 // 调用示例:
@@ -23,37 +22,68 @@ class ApiService {
     String path, {
     Map<String, dynamic>? queryParameters,
     required T Function(dynamic json) parser,
+    bool showHud = true,
+    bool notifyOnError = true,
+    bool toastOnBusinessError = true,
   }) async {
-    final response = await _client.get(path, params: queryParameters);
+    final response = await _client.get(
+      path,
+      params: queryParameters,
+      showHud: showHud,
+      notifyOnError: notifyOnError,
+    );
     final payload = response.data;
 
     if (payload is Map<String, dynamic> && payload.containsKey('code')) {
-      return BaseResponse.fromJson(payload, parser);
+      final result = BaseResponse.fromJson(payload, parser);
+      _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+      return result;
     }
 
-    return BaseResponse.fromJson({
+    final result = BaseResponse.fromJson({
       'code': response.statusCode ?? 0,
       'msg': response.statusMessage ?? '',
       'result': payload,
     }, parser);
+    _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+    return result;
   }
 
   Future<BaseResponse<T>> post<T>(
     String path, {
     dynamic data,
     required T Function(dynamic json) parser,
+    bool showHud = true,
+    bool notifyOnError = true,
+    bool toastOnBusinessError = true,
   }) async {
-    final response = await _client.post(path, data: data);
+    final response = await _client.post(
+      path,
+      data: data,
+      showHud: showHud,
+      notifyOnError: notifyOnError,
+    );
     final payload = response.data;
 
     if (payload is Map<String, dynamic> && payload.containsKey('code')) {
-      return BaseResponse.fromJson(payload, parser);
+      final result = BaseResponse.fromJson(payload, parser);
+      _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+      return result;
     }
 
-    return BaseResponse.fromJson({
+    final result = BaseResponse.fromJson({
       'code': response.statusCode ?? 0,
       'msg': response.statusMessage ?? '',
       'result': payload,
     }, parser);
+    _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+    return result;
+  }
+
+  void _handleBusinessError<T>(BaseResponse<T> response, bool shouldToast) {
+    if (shouldToast && !response.isSuccess) {
+      final message = response.message.isNotEmpty ? response.message : '请求失败';
+      showToast(message);
+    }
   }
 }

@@ -1,9 +1,9 @@
 class BaseResponse<T> {
   final int code;
   final String message;
-  final T? data;
+  final T? result;
 
-  BaseResponse({required this.code, required this.message, this.data});
+  BaseResponse({required this.code, required this.message, this.result});
 
   factory BaseResponse.fromJson(
     Map<String, dynamic> json,
@@ -16,14 +16,14 @@ class BaseResponse<T> {
 
     final resolvedMessage =
         (json['message'] ?? json['msg'] ?? json['error'] ?? '').toString();
-    final rawData = json.containsKey('data') ? json['data'] : json['result'];
+    final rawData = json.containsKey('result') ? json['result'] : json['data'];
 
     return BaseResponse(
       code: resolvedCode,
       message: resolvedMessage,
-      data: rawData != null ? fromJsonT(rawData) : null,
+      result: rawData != null ? fromJsonT(rawData) : null,
     );
   }
 
-  bool get isSuccess => code == 0 || code == 200;
+  bool get isSuccess => code == 0 || code == 1000;
 }

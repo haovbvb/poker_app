@@ -6,6 +6,7 @@ import 'package:merchant_app/l10n/app_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // ProviderScope 注入 Riverpod 的依赖树；MerchantApp 承载路由 / 主题等顶层配置。
   runApp(const ProviderScope(child: MerchantApp()));
 }
 
@@ -22,6 +23,7 @@ class MerchantApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // MaterialApp.router 使用 GoRouter 提供的 RouterConfig；主题、语言等均对接 Riverpod。
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (ctx) => AppLocalizations.of(ctx)!.appTitle,
