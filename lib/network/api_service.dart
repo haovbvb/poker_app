@@ -1,4 +1,10 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:merchant_app/app/app_router.dart';
 import 'package:merchant_app/core/utils/toast.dart';
+import 'package:merchant_app/features/login/providers/auth_controller.dart';
 
 import 'api_client.dart';
 import 'base_response.dart';
@@ -36,7 +42,7 @@ class ApiService {
 
     if (payload is Map<String, dynamic> && payload.containsKey('code')) {
       final result = BaseResponse.fromJson(payload, parser);
-      _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+      await _handleBusinessError(result, toastOnBusinessError && notifyOnError);
       return result;
     }
 
@@ -45,7 +51,7 @@ class ApiService {
       'msg': response.statusMessage ?? '',
       'result': payload,
     }, parser);
-    _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+    await _handleBusinessError(result, toastOnBusinessError && notifyOnError);
     return result;
   }
 
@@ -67,7 +73,7 @@ class ApiService {
 
     if (payload is Map<String, dynamic> && payload.containsKey('code')) {
       final result = BaseResponse.fromJson(payload, parser);
-      _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+      await _handleBusinessError(result, toastOnBusinessError && notifyOnError);
       return result;
     }
 
@@ -76,14 +82,37 @@ class ApiService {
       'msg': response.statusMessage ?? '',
       'result': payload,
     }, parser);
-    _handleBusinessError(result, toastOnBusinessError && notifyOnError);
+    await _handleBusinessError(result, toastOnBusinessError && notifyOnError);
     return result;
   }
 
-  void _handleBusinessError<T>(BaseResponse<T> response, bool shouldToast) {
+  Future<void> _handleBusinessError<T>(
+    BaseResponse<T> response,
+    bool shouldToast,
+  ) async {
+    if (response.code == 1001) {
+      final message = response.message.isNotEmpty ? response.message : '登录已过期';
+      showToast(message);
+
+      await _forceLogout();
+      return;
+    }
+
     if (shouldToast && !response.isSuccess) {
       final message = response.message.isNotEmpty ? response.message : '请求失败';
       showToast(message);
     }
+  }
+
+  Future<void> _forceLogout() async {
+    final context = AppRouter.navigatorKey.currentContext;
+    if (context == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _forceLogout());
+      return;
+    }
+
+    final container = ProviderScope.containerOf(context, listen: false);
+    await container.read(authNotifierProvider.notifier).clearSession();
+    Future.microtask(AppRouter.goLogin);
   }
 }

@@ -6,6 +6,10 @@ import 'package:merchant_app/features/login/models/user_state.dart';
 import 'package:merchant_app/features/login/presentation/bootstrap_page.dart';
 import 'package:merchant_app/features/login/presentation/login_page.dart';
 import 'package:merchant_app/features/login/providers/auth_controller.dart';
+import 'package:merchant_app/features/me/about_page.dart';
+import 'package:merchant_app/features/me/language.dart';
+import 'package:merchant_app/features/me/message.dart';
+import 'package:merchant_app/features/me/user_agreement_page.dart';
 
 class AppRouter {
   AppRouter._();
@@ -16,6 +20,10 @@ class AppRouter {
   static const String homePath = '/home';
   static const String loginPath = '/login';
   static const String splashPath = '/splash';
+  static const String userAgreementPath = '/profile/user-agreement';
+  static const String aboutPath = '/profile/about';
+  static const String messagePath = '/profile/messages';
+  static const String languagePath = '/profile/language';
 
   static final GoRouter router = GoRouter(
     navigatorKey: navigatorKey,
@@ -35,6 +43,26 @@ class AppRouter {
         path: homePath,
         name: 'home',
         builder: (context, state) => const RootTabScaffold(),
+      ),
+      GoRoute(
+        path: userAgreementPath,
+        name: 'user_agreement',
+        builder: (context, state) => const UserAgreementPage(),
+      ),
+      GoRoute(
+        path: aboutPath,
+        name: 'about',
+        builder: (context, state) => const AboutPage(),
+      ),
+      GoRoute(
+        path: messagePath,
+        name: 'messages',
+        builder: (context, state) => const MessagePage(),
+      ),
+      GoRoute(
+        path: languagePath,
+        name: 'language',
+        builder: (context, state) => const LanguageSelectionPage(),
       ),
     ],
     redirect: (context, state) {

@@ -55,7 +55,7 @@ class ApiClient {
             buffer.write(' headers=${options.headers}');
           }
           buffer
-            ..write(' token=${_authToken ?? ''}')
+            // ..write(' token=${_authToken ?? ''}')
             ..write(' acceptLanguage=$acceptLanguage');
 
           logI('[$_logTag] ${buffer.toString()}');

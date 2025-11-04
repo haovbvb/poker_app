@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:merchant_app/app/app_router.dart';
 import 'package:merchant_app/core/utils/context_extensions.dart';
+import 'package:merchant_app/features/login/models/auth_session.dart';
 import 'package:merchant_app/features/login/providers/auth_controller.dart';
-import 'package:merchant_app/features/me/language.dart';
 
 class ProfileTab extends ConsumerWidget {
   const ProfileTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userState = ref.watch(authNotifierProvider);
-    final session = userState.user;
+    ref.watch(authNotifierProvider);
+    final session = AuthSession.instance.current;
     final rawName = session != null ? session.name.trim() : '';
     final rawPhone = session != null ? session.phone.trim() : '';
     final name = rawName.isNotEmpty ? rawName : context.l10n.tabMe;
@@ -43,7 +44,9 @@ class ProfileTab extends ConsumerWidget {
               _SectionItem(
                 label: context.l10n.profileMessage,
                 icon: Icons.mail_outline,
-                onTap: () {},
+                onTap: () {
+                  AppRouter.router.push(AppRouter.messagePath);
+                },
               ),
               _SectionItem(
                 label: context.l10n.profileChangePassword,
@@ -60,22 +63,22 @@ class ProfileTab extends ConsumerWidget {
                 label: context.l10n.profileLanguage,
                 icon: Icons.language,
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const LanguageSelectionPage(),
-                    ),
-                  );
+                  AppRouter.router.push(AppRouter.languagePath);
                 },
               ),
               _SectionItem(
                 label: context.l10n.profileUserAgreement,
                 icon: Icons.description,
-                onTap: () {},
+                onTap: () {
+                  AppRouter.router.push(AppRouter.userAgreementPath);
+                },
               ),
               _SectionItem(
                 label: context.l10n.profileAbout,
                 icon: Icons.info_outline,
-                onTap: () {},
+                onTap: () {
+                  AppRouter.router.push(AppRouter.aboutPath);
+                },
               ),
             ],
           ),

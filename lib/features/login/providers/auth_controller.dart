@@ -6,6 +6,7 @@ import 'package:merchant_app/core/constants/storage_keys.dart';
 import 'package:merchant_app/core/utils/hash_utils.dart';
 import 'package:merchant_app/core/utils/toast.dart';
 import 'package:merchant_app/features/login/models/auth_result.dart';
+import 'package:merchant_app/features/login/models/auth_session.dart';
 import 'package:merchant_app/features/login/models/user_state.dart';
 import 'package:merchant_app/network/network.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,11 +73,13 @@ class AuthNotifier extends Notifier<UserState> {
 
   Future<void> updateSession(AuthResult result) async {
     await _persistToken(result.token);
+    AuthSession.instance.update(result);
     state = UserState(token: result.token, user: result);
   }
 
   Future<void> clearSession() async {
     await _clearToken();
+    AuthSession.instance.clear();
     state = const UserState();
   }
 
