@@ -41,5 +41,25 @@
   "nameRequired": "请输入用户名",
   "passwordLabel": "密码",
   "passwordRequired": "请输入密码",
-  "passwordTooShort": "密码长度至少 6 位"
+  "passwordTooShort": "密码长度至少 6 位",
+  "profileMessage": "消息",
+  "@profileMessage": {
+    "description": "个人中心中查看消息的菜单项"
+  },
+  "profileChangePassword": "修改密码",
+  "@profileChangePassword": {
+    "description": "个人中心中修改密码的菜单项"
+  },
+  "profileLanguage": "语言",
+  "@profileLanguage": {
+    "description": "个人中心中切换应用语言的菜单项"
+  },
+  "profileUserAgreement": "用户协议",
+  "@profileUserAgreement": {
+    "description": "个人中心中查看用户协议的菜单项"
+  },
+  "profileAbout": "关于",
+  "@profileAbout": {
+    "description": "个人中心中查看应用信息的菜单项"
+  }
 }

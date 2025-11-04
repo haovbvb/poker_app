@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -40,6 +41,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileGreeting => 'Manage your personal settings here.';
+
+  @override
+  String get profileMessage => 'Message';
+
+  @override
+  String get profileChangePassword => 'Change Password';
+
+  @override
+  String get profileLanguage => 'Language';
+
+  @override
+  String get profileUserAgreement => 'User Agreement';
+
+  @override
+  String get profileAbout => 'About';
 
   @override
   String get login => 'Sign In';

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:merchant_app/app/app_router.dart';
 import 'package:merchant_app/features/login/providers/auth_controller.dart';
-
+import 'package:merchant_app/features/login/models/auth_result.dart';
+import 'package:merchant_app/network/network.dart';
 /// 启动引导页：判断登录态后跳转 Home 或 Login。
 class BootstrapPage extends ConsumerStatefulWidget {
   const BootstrapPage({super.key});
@@ -13,7 +14,7 @@ class BootstrapPage extends ConsumerStatefulWidget {
 
 class _BootstrapPageState extends ConsumerState<BootstrapPage> {
   bool _checking = true;
-
+  final ApiService _apiService = ApiService();
   @override
   void initState() {
     super.initState();
@@ -31,6 +32,7 @@ class _BootstrapPageState extends ConsumerState<BootstrapPage> {
       if (token != null && token.isNotEmpty) {
         notifier.setToken(token);
         AppRouter.goHome();
+        WidgetsBinding.instance.addPostFrameCallback((_) => _refreshToken());
       } else {
         await notifier.clearSession();
         AppRouter.goLogin();
@@ -47,6 +49,48 @@ class _BootstrapPageState extends ConsumerState<BootstrapPage> {
       }
     }
   }
+
+  Future<void> _refreshToken() async {
+    try {
+      final response = await _apiService.post<AuthResult>(
+        ApiPath.refreshToken,
+        parser: _parseAuthResult,
+        showHud: false,
+        notifyOnError: false,
+        toastOnBusinessError: false,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      if (response.isSuccess && response.result != null) {
+        await ref
+            .read(authNotifierProvider.notifier)
+            .updateSession(response.result!);
+      } else {
+        await ref.read(authNotifierProvider.notifier).clearSession();
+        AppRouter.goLogin();
+      }
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      await ref.read(authNotifierProvider.notifier).clearSession();
+      AppRouter.goLogin();
+    }
+  }
+
+  AuthResult _parseAuthResult(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      return AuthResult.fromJson(data);
+    }
+    if (data is Map) {
+      return AuthResult.fromJson(Map<String, dynamic>.from(data));
+    }
+    throw NetworkExceptions('响应格式错误');
+  }
+
 
   @override
   Widget build(BuildContext context) {

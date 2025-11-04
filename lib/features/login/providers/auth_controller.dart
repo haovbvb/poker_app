@@ -6,26 +6,22 @@ import 'package:merchant_app/core/constants/storage_keys.dart';
 import 'package:merchant_app/core/utils/hash_utils.dart';
 import 'package:merchant_app/core/utils/toast.dart';
 import 'package:merchant_app/features/login/models/auth_result.dart';
-import 'package:merchant_app/features/login/models/auth_session.dart';
-import 'package:merchant_app/features/login/models/auth_state.dart';
-import 'package:merchant_app/network/api_client.dart';
-import 'package:merchant_app/network/api_path.dart';
-import 'package:merchant_app/network/api_service.dart';
-import 'package:merchant_app/network/network_exceptions.dart';
+import 'package:merchant_app/features/login/models/user_state.dart';
+import 'package:merchant_app/network/network.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// 对外暴露登录状态，供 UI 订阅的 Riverpod Notifier。
-final authNotifierProvider = NotifierProvider<AuthNotifier, AuthState>(
+final authNotifierProvider = NotifierProvider<AuthNotifier, UserState>(
   AuthNotifier.new,
 );
 
 /// 管理登录、登出流程的状态机，并负责恢复持久化的 token。
-class AuthNotifier extends Notifier<AuthState> {
+class AuthNotifier extends Notifier<UserState> {
   final ApiService _apiService = ApiService();
 
   @override
-  AuthState build() {
-    return AuthState();
+  UserState build() {
+    return const UserState();
   }
 
   /// 执行登录流程，并在成功后保存 token。
@@ -75,14 +71,13 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> updateSession(AuthResult result) async {
-    AuthSession.instance.update(result);
     await _persistToken(result.token);
-    state = AuthState(token: result.token);
+    state = UserState(token: result.token, user: result);
   }
 
   Future<void> clearSession() async {
     await _clearToken();
-    state = const AuthState();
+    state = const UserState();
   }
 
   Future<String?> loadTokenFromStorage() async {
@@ -90,7 +85,7 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   void setToken(String token) {
-    state = AuthState(token: token);
+    state = state.copyWith(token: token);
   }
 
   AuthResult _parseAuthResult(dynamic data) {
@@ -120,6 +115,5 @@ class AuthNotifier extends Notifier<AuthState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(StorageKeys.authToken);
     ApiClient().clearAuthToken();
-    AuthSession.instance.clear();
   }
 }

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:merchant_app/app/root_tab_scaffold.dart';
-import 'package:merchant_app/core/utils/logger.dart';
-import 'package:merchant_app/features/login/models/auth_state.dart';
+import 'package:merchant_app/features/login/models/user_state.dart';
 import 'package:merchant_app/features/login/presentation/bootstrap_page.dart';
 import 'package:merchant_app/features/login/presentation/login_page.dart';
 import 'package:merchant_app/features/login/providers/auth_controller.dart';
@@ -74,15 +73,15 @@ class AppRouter {
 class _GoRouterRefreshNotifier extends ChangeNotifier {
   _GoRouterRefreshNotifier(this._provider);
 
-  final NotifierProvider<AuthNotifier, AuthState> _provider;
-  ProviderSubscription<AuthState>? _subscription;
+  final NotifierProvider<AuthNotifier, UserState> _provider;
+  ProviderSubscription<UserState>? _subscription;
 
   void _ensureSubscribed(BuildContext context) {
     if (_subscription != null) {
       return;
     }
     final container = ProviderScope.containerOf(context, listen: false);
-    _subscription = container.listen<AuthState>(
+    _subscription = container.listen<UserState>(
       _provider,
       (_, __) => notifyListeners(),
       fireImmediately: true,

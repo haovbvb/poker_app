@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
+import 'package:merchant_app/core/services/language_store.dart';
 import 'package:merchant_app/core/utils/hud.dart';
 import 'package:merchant_app/core/utils/logger.dart';
 import 'package:merchant_app/core/utils/toast.dart';
@@ -42,9 +42,7 @@ class ApiClient {
             options.extra['_hudShown'] = true;
           }
 
-          final acceptLanguage = _resolveLanguage(
-            WidgetsBinding.instance.platformDispatcher.locale,
-          );
+          final acceptLanguage = LanguageStore.instance.languageCode;
           options.headers['Accept-Language'] = acceptLanguage;
 
           if (_authToken != null && _authToken!.isNotEmpty) {
@@ -153,9 +151,4 @@ class ApiClient {
   }
 
   void clearAuthToken() => setAuthToken(null);
-
-  String _resolveLanguage(Locale locale) {
-    final languageCode = locale.languageCode.toLowerCase();
-    return languageCode.startsWith('zh') ? 'zh' : 'en';
-  }
 }

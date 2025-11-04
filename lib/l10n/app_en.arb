@@ -41,5 +41,25 @@
   "nameRequired": "Username is required",
   "passwordLabel": "Password",
   "passwordRequired": "Password is required",
-  "passwordTooShort": "Password must be at least 6 characters"
+  "passwordTooShort": "Password must be at least 6 characters",
+  "profileMessage": "Message",
+  "@profileMessage": {
+    "description": "Menu label for viewing messages in the profile tab."
+  },
+  "profileChangePassword": "Change Password",
+  "@profileChangePassword": {
+    "description": "Menu label for changing the account password."
+  },
+  "profileLanguage": "Language",
+  "@profileLanguage": {
+    "description": "Menu label for selecting the application language."
+  },
+  "profileUserAgreement": "User Agreement",
+  "@profileUserAgreement": {
+    "description": "Menu label for viewing the user agreement."
+  },
+  "profileAbout": "About",
+  "@profileAbout": {
+    "description": "Menu label for viewing information about the application."
+  }
 }

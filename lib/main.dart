@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:merchant_app/app/app_router.dart';
 import 'package:merchant_app/app/theme.dart';
+import 'package:merchant_app/features/me/providers/language_notifier.dart';
 import 'package:merchant_app/l10n/app_localizations.dart';
 
 void main() {
@@ -30,6 +31,7 @@ class MerchantApp extends ConsumerWidget {
       theme: ref.watch(_lightThemeProvider),
       darkTheme: ref.watch(_darkThemeProvider),
       themeMode: ref.watch(_themeModeProvider),
+      locale: ref.watch(languageNotifierProvider),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: AppRouter.router,

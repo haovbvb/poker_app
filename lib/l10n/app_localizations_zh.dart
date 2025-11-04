@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -40,6 +41,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get profileGreeting => '在这里管理你的个人信息。';
+
+  @override
+  String get profileMessage => '消息';
+
+  @override
+  String get profileChangePassword => '修改密码';
+
+  @override
+  String get profileLanguage => '语言';
+
+  @override
+  String get profileUserAgreement => '用户协议';
+
+  @override
+  String get profileAbout => '关于';
 
   @override
   String get login => '登录';
