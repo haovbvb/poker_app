@@ -3,16 +3,25 @@ import 'package:flutter/material.dart';
 /// 颜色令牌：中性色、语义色、分割线与文本对比色工具
 class AppColors {
   // 中性文本
-  static const Color primaryText = Color(0xFF111827); // 黑灰 900
-  static const Color secondaryText = Color(0xFF6B7280); // 灰 500
-  static const Color hintText = Color(0xFF9CA3AF); // 灰 400
-  // 兼容要求：提供等同于 Colors.black54 的令牌
-  static const Color black54 = Color(0x8A000000); // 54% 黑
+  static const Color black09Text = Color(0xE6000000); // 黑 0.9
+  static const Color black08Text = Color(0xCC000000); // 黑 0.8
+  static const Color black07Text = Color(0xB3000000); // 黑 0.7
+  static const Color black05Text = Color(0x7F000000); // 黑 0.5
+  static const Color black06Text = Color(0x99000000); // 黑 0.6
+  static const Color black04Text = Color(0x66000000); // 黑 0.4
+  static const Color black03Text = Color(0x4D000000); // 黑 0.3
+  static const Color black02Text = Color(0x33000000); // 黑 0.2
+  static const Color black025Text = Color(0x40000000); // 黑 0.2.5
+
+  static const Color white09Text = Color(0xE6FFFFFF); // 白 0.9
+
+  static const Color primaryColor = Color(0xFF56B327); // 主色
+  static const Color secondaryColor = Color(0xFFFA4332); // 次要色
 
   // 分隔/卡片背景（通过透明度控制层级）
   static Color divider = Colors.black.withValues(alpha: 0.06);
   static Color cardBg = Colors.white;
-  static Color greyBg = Colors.grey.shade50;
+  static Color greyBg = Color(0xFFF6F8FC);
 
   // 语义色
   static const Color success = Color(0xFF22C55E);

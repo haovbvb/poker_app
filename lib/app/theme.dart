@@ -33,6 +33,8 @@ class BaseTheme {
         foregroundColor: textDark,
         elevation: 0.0,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
@@ -61,6 +63,14 @@ class BaseTheme {
       colorScheme: base.colorScheme.copyWith(
         primary: primaryColor,
         secondary: energyOrange,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,

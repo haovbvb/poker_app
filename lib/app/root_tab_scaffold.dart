@@ -32,7 +32,7 @@ class RootTabScaffold extends ConsumerWidget {
         body: const WorkTab(),
       ),
       _TabConfig(
-        title: l10n.meTitle,
+        title: '',
         label: l10n.tabMe,
         iconAsset: 'assets/images/tab_3.png',
         activeIconAsset: 'assets/images/tab_3_selected.png',
@@ -41,7 +41,7 @@ class RootTabScaffold extends ConsumerWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(tabs[currentIndex].title)),
+      // appBar: AppBar(title: Text(tabs[currentIndex].title)),
       body: IndexedStack(
         index: currentIndex,
         children: tabs.map((tab) => tab.body).toList(growable: false),
@@ -60,11 +60,7 @@ class RootTabScaffold extends ConsumerWidget {
               .map(
                 (tab) => BottomNavigationBarItem(
                   icon: Image.asset(tab.iconAsset),
-                  activeIcon: Image.asset(
-                    tab.activeIconAsset ?? tab.iconAsset,
-                    // width: 24,
-                    // height: 24,
-                  ),
+                  activeIcon: Image.asset(tab.activeIconAsset ?? tab.iconAsset),
                   label: tab.label,
                 ),
               )

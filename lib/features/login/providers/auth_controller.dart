@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:merchant_app/app/app_router.dart';
 import 'package:merchant_app/core/constants/storage_keys.dart';
 import 'package:merchant_app/core/utils/hash_utils.dart';
+import 'package:merchant_app/core/utils/logger.dart';
 import 'package:merchant_app/core/utils/toast.dart';
 import 'package:merchant_app/features/login/models/auth_result.dart';
 import 'package:merchant_app/features/login/models/auth_session.dart';
@@ -19,6 +20,7 @@ final authNotifierProvider = NotifierProvider<AuthNotifier, UserState>(
 /// 管理登录、登出流程的状态机，并负责恢复持久化的 token。
 class AuthNotifier extends Notifier<UserState> {
   final ApiService _apiService = ApiService();
+  final ApiClient _apiClient = ApiClient();
 
   @override
   UserState build() {
@@ -72,6 +74,7 @@ class AuthNotifier extends Notifier<UserState> {
   }
 
   Future<void> updateSession(AuthResult result) async {
+    _apiClient.setAuthToken(result.token);
     await _persistToken(result.token);
     AuthSession.instance.update(result);
     state = UserState(token: result.token, user: result);
@@ -79,6 +82,7 @@ class AuthNotifier extends Notifier<UserState> {
 
   Future<void> clearSession() async {
     await _clearToken();
+    _apiClient.clearAuthToken();
     AuthSession.instance.clear();
     state = const UserState();
   }
@@ -88,6 +92,7 @@ class AuthNotifier extends Notifier<UserState> {
   }
 
   void setToken(String token) {
+    _apiClient.setAuthToken(token);
     state = state.copyWith(token: token);
   }
 
@@ -102,21 +107,31 @@ class AuthNotifier extends Notifier<UserState> {
   }
 
   Future<void> _persistToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(StorageKeys.authToken, token);
-    ApiClient().setAuthToken(token);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ok = await prefs.setString(StorageKeys.authToken, token);
+      if (!ok) {
+        logW('[AuthNotifier] Failed to persist token');
+      } else {
+        logI('[AuthNotifier] Token persisted successfully $token');
+      }
+    } catch (error, stackTrace) {
+      logE('[AuthNotifier] Error persisting token', error, stackTrace);
+    }
   }
 
   Future<String?> _readToken() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(StorageKeys.authToken);
-    ApiClient().setAuthToken(token);
     return token;
   }
 
   Future<void> _clearToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(StorageKeys.authToken);
-    ApiClient().clearAuthToken();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(StorageKeys.authToken);
+    } catch (error, stackTrace) {
+      logE('[AuthNotifier] Error clearing token', error, stackTrace);
+    }
   }
 }

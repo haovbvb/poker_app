@@ -1,28 +1,43 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
+import 'package:merchant_app/core/constants/storage_keys.dart';
 import 'package:merchant_app/core/services/language_store.dart';
 import 'package:merchant_app/core/utils/hud.dart';
 import 'package:merchant_app/core/utils/logger.dart';
 import 'package:merchant_app/core/utils/toast.dart';
+import 'package:merchant_app/network/api_path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'network_exceptions.dart';
 
 const _logTag = 'ApiClient';
+
+enum ApiEnvironment { production, testing }
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();
   factory ApiClient() => _instance;
   late Dio dio;
   String? _authToken;
+  ApiEnvironment _environment = ApiEnvironment.production;
+
+  static const Map<ApiEnvironment, String> _envBaseUrls = {
+    ApiEnvironment.production: ApiPath.proBaseUrl,
+    ApiEnvironment.testing: ApiPath.testBaseUrl,
+  };
 
   ApiClient._internal() {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'https://t-kora-admin-app.esquare-global.com', // 🔧 修改为你的域名
+        baseUrl: _resolveBaseUrl(),
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {'Content-Type': 'application/json'},
       ),
     );
+
+    unawaited(_restoreToken());
 
     // ✅ 添加拦截器
     dio.interceptors.add(
@@ -54,9 +69,6 @@ class ApiClient {
           if (options.headers.isNotEmpty) {
             buffer.write(' headers=${options.headers}');
           }
-          buffer
-            // ..write(' token=${_authToken ?? ''}')
-            ..write(' acceptLanguage=$acceptLanguage');
 
           logI('[$_logTag] ${buffer.toString()}');
           return handler.next(options);
@@ -100,6 +112,20 @@ class ApiClient {
         },
       ),
     );
+  }
+
+  ApiEnvironment get environment => _environment;
+
+  String get baseUrl => _resolveBaseUrl();
+
+  void setEnvironment(ApiEnvironment environment) {
+    if (_environment == environment) {
+      return;
+    }
+    _environment = environment;
+    final resolved = _resolveBaseUrl();
+    dio.options.baseUrl = resolved;
+    logI('[$_logTag] 🔁 Switched API environment to $environment ($resolved)');
   }
 
   // 通用请求封装
@@ -150,5 +176,22 @@ class ApiClient {
     }
   }
 
+  Future<void> _restoreToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(StorageKeys.authToken);
+      if (token != null && token.isNotEmpty) {
+        _authToken = token;
+        logI('[$_logTag] 🔁 Restored persisted token');
+      }
+    } catch (error) {
+      logW('[$_logTag] ⚠️ Failed to restore token: $error');
+    }
+  }
+
   void clearAuthToken() => setAuthToken(null);
+
+  String _resolveBaseUrl() {
+    return _envBaseUrls[_environment]!;
+  }
 }
