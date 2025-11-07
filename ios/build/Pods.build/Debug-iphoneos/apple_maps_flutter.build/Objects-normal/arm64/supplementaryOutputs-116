@@ -1,0 +1,18 @@
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polylines/PolylineDelegate.swift":
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineDelegate.swiftdeps"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineDelegate.d"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineDelegate.dia"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineDelegate.o"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineDelegate.swiftconstvalues"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/models/SnapshotOptions.swift":
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/SnapshotOptions.d"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/SnapshotOptions.dia"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/SnapshotOptions.swiftdeps"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/SnapshotOptions.swiftconstvalues"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/SnapshotOptions.o"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polylines/PolylineController.swift":
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineController.swiftdeps"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineController.swiftconstvalues"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineController.o"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineController.dia"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolylineController.d"

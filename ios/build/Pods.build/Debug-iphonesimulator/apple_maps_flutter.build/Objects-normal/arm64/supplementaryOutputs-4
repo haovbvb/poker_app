@@ -1,0 +1,18 @@
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/AnnotationDelegate.swift":
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationDelegate.o"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationDelegate.dia"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationDelegate.swiftconstvalues"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationDelegate.swiftdeps"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationDelegate.d"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/AnnotationController.swift":
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationController.swiftdeps"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationController.dia"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationController.d"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationController.swiftconstvalues"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationController.o"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/AnnotationIcon.swift":
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationIcon.swiftdeps"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationIcon.dia"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationIcon.d"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationIcon.swiftconstvalues"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/AnnotationIcon.o"

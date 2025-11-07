@@ -1,0 +1,18 @@
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/circles/CircleDelegate.swift":
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/CircleDelegate.swiftdeps"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/CircleDelegate.swiftconstvalues"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/CircleDelegate.dia"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/CircleDelegate.d"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/CircleDelegate.o"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/FlutterAnnotationView.swift":
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotationView.swiftdeps"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotationView.dia"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotationView.d"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotationView.o"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotationView.swiftconstvalues"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/FlutterAnnotation.swift":
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotation.dia"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotation.o"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotation.swiftdeps"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotation.d"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/FlutterAnnotation.swiftconstvalues"

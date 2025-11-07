@@ -25,6 +25,13 @@ dependencies:
   crypto: ^3.0.6 # 加密散列
   webview_flutter: ^4.8.0 # Web 页面展示
   pull_to_refresh: ^2.0.0 # 下拉刷新列表
+  google_maps_flutter: ^2.9.0 # 地图
+  apple_maps_flutter: ^1.4.0 # iOS 原生地图
+
+  # 本地组件
+  jui:
+    path: ./jui
+
 
 dev_dependencies:
   flutter_test:

@@ -1,0 +1,36 @@
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter_wkwebview-3.23.2/darwin/webview_flutter_wkwebview/Sources/webview_flutter_wkwebview/HTTPCookieStoreProxyAPIDelegate.swift":
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieStoreProxyAPIDelegate.d"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieStoreProxyAPIDelegate.o"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieStoreProxyAPIDelegate.swiftdeps"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieStoreProxyAPIDelegate.swiftconstvalues"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieStoreProxyAPIDelegate.dia"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter_wkwebview-3.23.2/darwin/webview_flutter_wkwebview/Sources/webview_flutter_wkwebview/HTTPCookieProxyAPIDelegate.swift":
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieProxyAPIDelegate.d"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieProxyAPIDelegate.swiftdeps"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieProxyAPIDelegate.dia"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieProxyAPIDelegate.swiftconstvalues"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPCookieProxyAPIDelegate.o"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter_wkwebview-3.23.2/darwin/webview_flutter_wkwebview/Sources/webview_flutter_wkwebview/GetTrustResultResponseProxyAPIDelegate.swift":
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponseProxyAPIDelegate.d"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponseProxyAPIDelegate.o"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponseProxyAPIDelegate.dia"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponseProxyAPIDelegate.swiftconstvalues"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponseProxyAPIDelegate.swiftdeps"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter_wkwebview-3.23.2/darwin/webview_flutter_wkwebview/Sources/webview_flutter_wkwebview/GetTrustResultResponse.swift":
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponse.d"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponse.swiftdeps"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponse.dia"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponse.swiftconstvalues"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/GetTrustResultResponse.o"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter_wkwebview-3.23.2/darwin/webview_flutter_wkwebview/Sources/webview_flutter_wkwebview/HTTPURLResponseProxyAPIDelegate.swift":
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPURLResponseProxyAPIDelegate.d"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPURLResponseProxyAPIDelegate.o"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPURLResponseProxyAPIDelegate.swiftdeps"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPURLResponseProxyAPIDelegate.swiftconstvalues"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/HTTPURLResponseProxyAPIDelegate.dia"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/webview_flutter_wkwebview-3.23.2/darwin/webview_flutter_wkwebview/Sources/webview_flutter_wkwebview/NavigationActionProxyAPIDelegate.swift":
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/NavigationActionProxyAPIDelegate.o"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/NavigationActionProxyAPIDelegate.d"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/NavigationActionProxyAPIDelegate.swiftconstvalues"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/NavigationActionProxyAPIDelegate.dia"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/webview_flutter_wkwebview.build/Objects-normal/arm64/NavigationActionProxyAPIDelegate.swiftdeps"

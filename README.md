@@ -1,6 +1,7 @@
 # merchant_app
 
 Flutter 商户侧应用，整合 Riverpod 状态管理、Dio 网络封装以及多语言支持，提供登录、首页、工作台与“我的”等核心模块。
+通用 UI 组件库 jui, 参考文档: https://www.yuque.com/jui_flutter/kb/howistv001f1ghp9
 
 ## 环境要求
 

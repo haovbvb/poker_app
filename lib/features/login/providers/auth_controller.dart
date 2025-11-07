@@ -113,7 +113,7 @@ class AuthNotifier extends Notifier<UserState> {
       if (!ok) {
         logW('[AuthNotifier] Failed to persist token');
       } else {
-        logI('[AuthNotifier] Token persisted successfully $token');
+        logI('[AuthNotifier] Token 更新成功！');
       }
     } catch (error, stackTrace) {
       logE('[AuthNotifier] Error persisting token', error, stackTrace);

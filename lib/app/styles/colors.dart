@@ -12,6 +12,7 @@ class AppColors {
   static const Color black03Text = Color(0x4D000000); // 黑 0.3
   static const Color black02Text = Color(0x33000000); // 黑 0.2
   static const Color black025Text = Color(0x40000000); // 黑 0.2.5
+  static const Color black54 = Color(0x8A000000); // 兼容旧样式需求
 
   static const Color white09Text = Color(0xE6FFFFFF); // 白 0.9
 

@@ -1,0 +1,18 @@
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/SwiftAppleMapsFlutterPlugin.swift":
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/SwiftAppleMapsFlutterPlugin.swiftconstvalues"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/SwiftAppleMapsFlutterPlugin.o"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/SwiftAppleMapsFlutterPlugin.d"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/SwiftAppleMapsFlutterPlugin.swiftdeps"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/SwiftAppleMapsFlutterPlugin.dia"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Utils/TouchHandler.swift":
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/TouchHandler.dia"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/TouchHandler.o"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/TouchHandler.d"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/TouchHandler.swiftdeps"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/TouchHandler.swiftconstvalues"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Utils/Utils.swift":
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/Utils.swiftconstvalues"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/Utils.swiftdeps"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/Utils.d"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/Utils.o"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/arm64/Utils.dia"

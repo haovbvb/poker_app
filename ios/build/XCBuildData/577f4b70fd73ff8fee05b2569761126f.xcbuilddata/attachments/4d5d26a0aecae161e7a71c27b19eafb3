@@ -1,0 +1,5 @@
+
+module apple_maps_flutter.Swift {
+  header "apple_maps_flutter-Swift.h"
+  requires objc
+}

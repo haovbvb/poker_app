@@ -1,0 +1,18 @@
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polygons/PolygonDelegate.swift":
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonDelegate.o"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonDelegate.dia"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonDelegate.swiftconstvalues"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonDelegate.swiftdeps"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonDelegate.d"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/MapView/MapViewExtension.swift":
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/MapViewExtension.o"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/MapViewExtension.swiftdeps"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/MapViewExtension.dia"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/MapViewExtension.swiftconstvalues"
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/MapViewExtension.d"
+"/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polygons/PolygonController.swift":
+  dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonController.d"
+  object: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonController.o"
+  diagnostics: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonController.dia"
+  const-values: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonController.swiftconstvalues"
+  swift-dependencies: "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphoneos/apple_maps_flutter.build/Objects-normal/arm64/PolygonController.swiftdeps"

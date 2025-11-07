@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jui/common.dart';
 import 'package:merchant_app/core/utils/context_extensions.dart';
 import 'package:merchant_app/features/login/providers/auth_controller.dart';
 
@@ -86,14 +87,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   },
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _isSubmitting ? null : _onSubmit,
-                  child: _isSubmitting
-                      ? const SizedBox.square(
-                          dimension: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.login),
+                JuiButton(
+                  colorType: JuiButtonColorType.blue,
+                  sizeType: JuiButtonSizeType.large,
+                  text: l10n.login,
+                  width: double.infinity,
+                  disable: _isSubmitting,
+                  onTap: () => _onSubmit(),
                 ),
               ],
             ),

@@ -1,0 +1,248 @@
+{
+  "" : {
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/apple_maps_flutter-master.dia",
+    "emit-module-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/apple_maps_flutter-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/apple_maps_flutter-master-emit-module.dia",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/apple_maps_flutter-master.swiftdeps"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/AnnotationController.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationController~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/AnnotationDelegate.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationDelegate~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/AnnotationIcon.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AnnotationIcon~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/FlutterAnnotation.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotation~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Annotations/FlutterAnnotationView.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterAnnotationView~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/MapView/AppleMapController.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapController~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/MapView/AppleMapsViewFactory.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/AppleMapsViewFactory~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/MapView/FlutterMapView.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterMapView~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/MapView/MapViewExtension.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/MapViewExtension~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/FlutterOverlay.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterOverlay~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polygons/FlutterPolygon.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolygon~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polygons/PolygonController.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonController~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polygons/PolygonDelegate.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolygonDelegate~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polylines/FlutterPolyline.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterPolyline~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polylines/PolylineController.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineController~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/Polylines/PolylineDelegate.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/PolylineDelegate~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/circles/CircleController.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleController~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/circles/CircleDelegate.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/CircleDelegate~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Overlays/circles/FlutterCircle.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/FlutterCircle~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/SwiftAppleMapsFlutterPlugin.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SwiftAppleMapsFlutterPlugin~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Utils/JsonConversion.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/JsonConversion~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Utils/TouchHandler.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/TouchHandler~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/Utils/Utils.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/Utils~partial.swiftmodule"
+  },
+  "/Users/ping/.pub-cache/hosted/pub.flutter-io.cn/apple_maps_flutter-1.4.0/ios/Classes/models/SnapshotOptions.swift" : {
+    "const-values" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions.swiftconstvalues",
+    "dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions.d",
+    "diagnostics" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions.dia",
+    "index-unit-output-path" : "/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions.o",
+    "llvm-bc" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions.bc",
+    "object" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions.o",
+    "swift-dependencies" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions.swiftdeps",
+    "swiftmodule" : "/Users/ping/Desktop/work/merchant_app/ios/build/Pods.build/Debug-iphonesimulator/apple_maps_flutter.build/Objects-normal/x86_64/SnapshotOptions~partial.swiftmodule"
+  }
+}

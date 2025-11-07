@@ -1,0 +1,28 @@
+moduledependenciestarget: \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Modules/module.modulemap \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/Google-Maps-iOS-Utils/GoogleMapsUtils.framework/Modules/module.modulemap \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/google_maps_flutter_ios-umbrella.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.4.sdk/System/Library/Frameworks/Foundation.framework/Modules/module.modulemap \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FGMGroundOverlayController.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.4.sdk/System/Library/Frameworks/CoreLocation.framework/Modules/module.modulemap \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/Flutter.framework/Modules/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.4.sdk/System/Library/Frameworks/UIKit.framework/Modules/module.modulemap \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/XCFrameworkIntermediates/GoogleMaps/Maps/GoogleMaps.framework/Modules/module.modulemap \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/messages.g.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FGMGroundOverlayController_Test.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FGMImageUtils.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FGMMarkerUserData.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FLTGoogleMapHeatmapController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FLTGoogleMapJSONConversions.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FLTGoogleMapTileOverlayController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FLTGoogleMapsPlugin.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FGMClusterManagersController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapCircleController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/FGMCATransactionWrapper.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapMarkerController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapPolygonController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapPolylineController.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapPolylineController_Test.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapController_Test.h \
+  /Users/ping/Desktop/work/merchant_app/build/ios/Debug-iphonesimulator/google_maps_flutter_ios/google_maps_flutter_ios.framework/Headers/GoogleMapMarkerController_Test.h

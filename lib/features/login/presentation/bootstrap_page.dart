@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:merchant_app/app/app_router.dart';
-import 'package:merchant_app/core/utils/logger.dart';
 import 'package:merchant_app/features/login/models/auth_result.dart';
 import 'package:merchant_app/features/login/providers/auth_controller.dart';
 import 'package:merchant_app/network/network.dart';
@@ -17,33 +16,34 @@ class BootstrapPage extends ConsumerStatefulWidget {
 class _BootstrapPageState extends ConsumerState<BootstrapPage> {
   bool _checking = true;
   final ApiService _apiService = ApiService();
+  late final AuthNotifier _authNotifier;
+
   @override
   void initState() {
     super.initState();
+    _authNotifier = ref.read(authNotifierProvider.notifier);
     WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
 
   Future<void> _bootstrap() async {
-    final notifier = ref.read(authNotifierProvider.notifier);
     try {
-      final token = await notifier.loadTokenFromStorage();
+      final token = await _authNotifier.loadTokenFromStorage();
       if (!mounted) {
         return;
       }
 
       if (token != null && token.isNotEmpty) {
-        notifier.setToken(token);
-        AppRouter.goHome();
+        _authNotifier.setToken(token);
         _refreshToken();
       } else {
-        await notifier.clearSession();
+        await _authNotifier.clearSession();
         AppRouter.goLogin();
       }
     } catch (_) {
       if (!mounted) {
         return;
       }
-      await notifier.clearSession();
+      await _authNotifier.clearSession();
       AppRouter.goLogin();
     } finally {
       if (mounted) {
@@ -53,7 +53,6 @@ class _BootstrapPageState extends ConsumerState<BootstrapPage> {
   }
 
   Future<void> _refreshToken() async {
-    final notifier = ref.read(authNotifierProvider.notifier);
     try {
       final response = await _apiService.post<AuthResult>(
         ApiPath.refreshToken,
@@ -64,13 +63,15 @@ class _BootstrapPageState extends ConsumerState<BootstrapPage> {
       );
 
       if (response.isSuccess && response.result != null) {
-        await notifier.updateSession(response.result!);
+        await _authNotifier.updateSession(response.result!);
+        AppRouter.goHome();
       } else {
-        await notifier.clearSession();
+        await _authNotifier.clearSession();
         AppRouter.goLogin();
       }
     } catch (_) {
-      await notifier.clearSession();
+
+      await _authNotifier.clearSession();
       AppRouter.goLogin();
     }
   }
