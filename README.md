@@ -101,4 +101,10 @@ flutter gen-l10n
 
 ---
 
-欢迎根据业务需求扩展 README，补充 API 文档、设计稿链接或迭代计划。若发现文档与实现不一致，请优先以代码为准并提更新。
+## 参考资料
+
+- jui 组件库文档：https://www.yuque.com/jui_flutter/kb/howistv001f1ghp9
+- Flutter 官方文档：https://docs.flutter.dev
+- GoRouter 指南：https://pub.dev/packages/go_router
+
+如需补充 API 列表或迭代计划，请在对应章节追加说明。若发现文档与实现不一致，请以代码为准并及时提交更新。

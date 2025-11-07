@@ -44,7 +44,7 @@
           "BUILD_DIR" : "/Users/ping/Desktop/work/merchant_app/build/ios",
           "COMPILER_INDEX_STORE_ENABLE" : "NO",
           "FLUTTER_SUPPRESS_ANALYTICS" : "true",
-          "SCRIPT_OUTPUT_STREAM_FILE" : "/var/folders/cq/stkv_4pn4rd5vft3jn1y0n_m0000gn/T/flutter_tools.N7Kz7R/flutter_ios_build_temp_dirWCeClV/pipe_to_stdout",
+          "SCRIPT_OUTPUT_STREAM_FILE" : "/var/folders/cq/stkv_4pn4rd5vft3jn1y0n_m0000gn/T/flutter_tools.cJ5W1X/flutter_ios_build_temp_dir8Bfkr3/pipe_to_stdout",
           "SDKROOT" : "iphonesimulator18.4"
         }
       },

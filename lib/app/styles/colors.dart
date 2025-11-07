@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 /// 颜色令牌：中性色、语义色、分割线与文本对比色工具
 class AppColors {
+
   // 中性文本
   static const Color black09Text = Color(0xE6000000); // 黑 0.9
   static const Color black08Text = Color(0xCC000000); // 黑 0.8
@@ -18,6 +19,9 @@ class AppColors {
 
   static const Color primaryColor = Color(0xFF56B327); // 主色
   static const Color secondaryColor = Color(0xFFFA4332); // 次要色
+
+  static const Color bgColor = Color(0xFFF5F6F7); // 页面背景色
+  static  Color borderColor = Colors.black.withValues(alpha: 0.06);
 
   // 分隔/卡片背景（通过透明度控制层级）
   static Color divider = Colors.black.withValues(alpha: 0.06);
