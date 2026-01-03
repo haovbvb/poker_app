@@ -1,0 +1,19 @@
+flowchart TD
+    %% 异常流：断线 / 超时（风控 & QA）
+
+    %% 断线可能发生在任意阶段：保留座位/手牌状态，继续计时
+    AnyPhase[任意阶段] -.-> Disconnect[断线] -.-> MarkDC[标记离线/启动离线倒计时]
+    MarkDC -.-> DCInHand{是否在手中?}
+    DCInHand -.->|是| DCAuto[按计时自动行动<br/>Check/Fold]
+    DCInHand -.->|否| DCSitOut[自动坐出/保持观战]
+
+    Disconnect -.-> Reconnect[重连] -.-> SyncState[下发桌面快照<br/>仅本人手牌可见]
+    SyncState -.-> AnyPhase
+
+    %% 将关键阶段“挂”到任意阶段锚点上，便于审计与用例覆盖
+    ForcedBets[强制下注] -.-> AnyPhase
+    StreetPre[Preflop 下注轮] -.-> AnyPhase
+    StreetFlop[Flop 下注轮] -.-> AnyPhase
+    StreetTurn[Turn 下注轮] -.-> AnyPhase
+    StreetRiver[River 下注轮] -.-> AnyPhase
+    Showdown[摊牌] -.-> AnyPhase

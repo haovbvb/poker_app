@@ -55,19 +55,16 @@ class AuthNotifier extends Notifier<UserState> {
   /// 清除 token 并重置为未登录状态。
   Future<void> logout() async {
     try {
-      final response = await _apiService.post<AuthResult>(
+      // 服务端登出失败不应阻塞本地登出。
+      await _apiService.post<AuthResult>(
         ApiPath.logout,
         parser: _parseAuthResult,
       );
-
-      if (!response.isSuccess) {
-        return;
-      }
-
-      await clearSession();
-      Future.microtask(AppRouter.goLogin);
     } catch (_) {
       // 全局已处理提示。
+    } finally {
+      await clearSession();
+      Future.microtask(AppRouter.goLogin);
     }
   }
 

@@ -1,0 +1,145 @@
+sequenceDiagram
+autonumber
+actor Client as 客户端(HTTP/WS)
+participant TablesAPI as REST: tables.py
+participant WS as WS: ws.py
+participant PM as PokerManager
+participant T as PokerTable
+participant ES as EventStore(Redis/内存)
+participant DM as DeckManager
+participant HE as HandEvaluator
+
+rect rgb(245,245,245)
+note over Client,TablesAPI: 一、快速开始 / 进桌（HTTP）
+Client->>TablesAPI: POST /poker/tables/quick_start(max_chips)
+TablesAPI->>PM: quick_start_table(max_chips)
+PM-->>TablesAPI: table
+TablesAPI->>T: ensure_member(user_id, username)
+T->>T: emit(PLAYER_JOINED)
+T->>ES: append(event)
+T-->>TablesAPI: OK(table_id)
+end
+
+rect rgb(245,245,245)
+note over Client,TablesAPI: 二、买入 / 坐下（HTTP）
+Client->>TablesAPI: POST /{table_id}/buyin(amount)
+TablesAPI->>PM: get_table(table_id)
+PM-->>TablesAPI: table
+TablesAPI->>T: buyin(user_id, amount)
+T->>T: emit(BUYIN_OK)
+T->>ES: append(event)
+TablesAPI-->>Client: OK
+
+Client->>TablesAPI: POST /{table_id}/sit(seat_no)
+TablesAPI->>PM: get_table(table_id)
+PM-->>TablesAPI: table
+TablesAPI->>T: sit(user_id, seat_no)
+T->>T: emit(PLAYER_SEATED)
+T->>ES: append(event)
+T->>T: _maybe_start_hand()  %% sit 后触发
+end
+
+rect rgb(240,250,255)
+note over T,DM: 三、自动开局 / 发牌（引擎内部）
+T->>T: _maybe_start_hand() 条件：seated>=2 & hand=None
+T->>DM: commit()
+DM-->>T: audit(server_seed_hash, deck_hash)
+T->>DM: reveal()
+DM-->>T: server_seed_hex
+T->>T: 收 ante/sb/bb/straddle + 发两张手牌(写入 hand.hole_cards/hand.deck)
+T->>T: emit(HAND_SEED_COMMIT)
+T->>ES: append(event)
+T->>T: emit(HAND_DECK_COMMIT)
+T->>ES: append(event)
+T->>T: emit(HAND_STARTED)
+T->>ES: append(event)
+T->>T: emit(BLINDS_POSTED)
+T->>ES: append(event)
+loop 每个玩家（私密事件）
+  T->>T: emit(HOLE_CARDS_DEALT, visibility=private, audience=[uid], public_payload=脱敏)
+  T->>ES: append(event)
+end
+T->>T: _emit_action_request()
+T->>T: emit(ACTION_REQUESTED, payload含 action_token)
+T->>ES: append(event)
+end
+
+rect rgb(255,250,240)
+note over Client,WS: 四、WS 连接、补拉与实时推送
+Client->>WS: WebSocket /{table_id}/ws (Authorization)
+WS->>PM: get_table(table_id)
+PM-->>WS: table
+WS->>T: ensure_member(user_id, username)
+WS->>T: connect(user_id, websocket)
+
+alt last_seq_hint > 0
+  WS->>T: fetch_events_since_for_user(user_id, last_seq)
+  T->>ES: fetch_since(seq)
+  ES-->>T: events
+  T-->>WS: filtered events
+  WS-->>Client: send_json(events...)
+else 无 last_seq_hint
+  WS->>T: snapshot_for(user_id)
+  T-->>WS: snapshot(你自己的 hole_cards 才会出现)
+  WS-->>Client: TABLE_SNAPSHOT
+end
+
+note over T,Client: 实时事件广播：T.emit() -> _dispatch_event() -> 按 visibility/audience 过滤后给每个 WS 连接 send_json
+end
+
+rect rgb(250,240,250)
+note over Client,T: 五、玩家动作（WS ACTION）与推进
+Client->>WS: {"type":"ACTION","action_token":X,"action":"call/check/raise_to/fold",...}
+WS->>T: handle_action(user_id, action, amount, client_action_id, action_token=X)
+
+T->>T: 校验：是否轮到你 + action_token 是否匹配 + 是否超时
+T->>T: 更新下注状态(committed_round/current_bet/min_raise_to/pending_to_act/stack/pot)
+T->>T: emit(ACTION_TAKEN)
+T->>ES: append(event)
+
+T->>T: _advance_after_action_locked(now_ms)
+
+alt 只剩 1 人未弃牌
+    T->>T: settle_pots()
+    T->>T: emit(HAND_SEED_REVEALED)
+    T->>ES: append(event)
+    T->>T: emit(HAND_ENDED)
+    T->>ES: append(event)
+
+else 无人可行动 (all-in / locked)
+    T->>T: _runout_to_showdown_locked()
+    loop 每一条未发街
+        T->>T: burn + deal
+        T->>T: emit(STREET_DEALT)
+        T->>ES: append(event)
+    end
+    T->>T: _showdown_locked()
+    T->>HE: rank_seven(players)
+    HE-->>T: ranks
+    T->>T: split_side_pots()
+    T->>T: emit(SHOWDOWN)
+    T->>ES: append(event)
+    T->>T: emit(HAND_SEED_REVEALED)
+    T->>ES: append(event)
+    T->>T: emit(HAND_ENDED)
+    T->>ES: append(event)
+
+else 本轮下注结束
+    T->>T: _advance_street_locked()
+    T->>T: emit(STREET_COMPLETED)
+    T->>ES: append(event)
+    T->>T: burn + deal next street
+    T->>T: emit(STREET_DEALT)
+    T->>ES: append(event)
+    T->>T: _reset_betting_round()
+    T->>T: action_token++
+    T->>T: emit(ACTION_REQUESTED)
+    T->>ES: append(event)
+
+else 继续行动
+    T->>T: acting_seat = next
+    T->>T: action_token++
+    T->>T: emit(ACTION_REQUESTED)
+    T->>ES: append(event)
+end
+end

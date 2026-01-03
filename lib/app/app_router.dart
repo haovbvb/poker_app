@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:poker_app/app/root_tab_scaffold.dart';
 import 'package:poker_app/core/widgets/common_webview_page.dart';
+import 'package:poker_app/features/home/home.dart';
+import 'package:poker_app/features/home/game_table_page.dart';
 import 'package:poker_app/features/login/models/user_state.dart';
 import 'package:poker_app/features/login/presentation/bootstrap_page.dart';
 import 'package:poker_app/features/login/presentation/login_page.dart';
@@ -20,6 +21,7 @@ class AppRouter {
   static const String homePath = '/home';
   static const String loginPath = '/login';
   static const String splashPath = '/splash';
+  static const String gamePath = '/poker/:tableId';
   static const String userAgreementPath = '/profile/user-agreement';
   static const String aboutPath = '/profile/about';
   static const String messagePath = '/profile/messages';
@@ -42,7 +44,18 @@ class AppRouter {
       GoRoute(
         path: homePath,
         name: 'home',
-        builder: (context, state) => const RootTabScaffold(),
+        builder: (context, state) => const HomeTab(),
+      ),
+      GoRoute(
+        path: gamePath,
+        name: 'poker_game',
+        builder: (context, state) {
+          final tableId = state.pathParameters['tableId'];
+          if (tableId == null) {
+            return const Scaffold(body: Center(child: Text('缺少牌桌ID')));
+          }
+          return GameTablePage(tableId: tableId);
+        },
       ),
       GoRoute(
         path: userAgreementPath,
@@ -96,6 +109,7 @@ class AppRouter {
 
   static void goLogin() => router.go(loginPath);
   static void goSplash() => router.go(splashPath);
+  static void pushGame(String tableId) => router.push('/poker/$tableId');
 }
 
 class _GoRouterRefreshNotifier extends ChangeNotifier {

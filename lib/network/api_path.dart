@@ -5,18 +5,15 @@ class ApiPath {
       'http://localhost:8000';
 
   static const String posts = '/posts';
-    static String get user => v1UserInfo;
-    static String get login => v1AccessToken;
-  static const String logout = '/admin/sys/user/logout';
-    static String get refreshToken => v1RefreshToken;
 
   // FastAPI OpenAPI (/api/v1)
   static const String _v1 = '/api/v1';
 
   // 基础模块
-  static const String v1AccessToken = '$_v1/base/access_token';
-  static const String v1RefreshToken = '$_v1/base/refresh_token';
-  static const String v1UserInfo = '$_v1/base/userinfo';
+  static const String login = '$_v1/base/access_token';
+  static const String refreshToken = '$_v1/base/refresh_token';
+  static const String user = '$_v1/base/userinfo';
+  static const String logout = '$_v1/base/logout';
   static const String v1Health = '$_v1/base/health';
   static const String v1Version = '$_v1/base/version';
 
@@ -68,6 +65,8 @@ class ApiPath {
       '$_v1/poker/tables/$tableId/spectate';
   static String v1PokerTableSitout(String tableId) =>
       '$_v1/poker/tables/$tableId/sitout';
+
+    static String v1PokerTableWs(String tableId) => '$_v1/poker/tables/$tableId/ws';
 
   // 订阅模块
   static const String v1SubscriptionsVerify = '$_v1/subscriptions/verify';

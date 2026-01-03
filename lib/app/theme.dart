@@ -40,13 +40,6 @@ class BaseTheme {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        selectedItemColor: energyOrange,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        backgroundColor: Colors.white,
-        elevation: 8,
-      ),
       textTheme: adjustedTextTheme,
     );
   }
@@ -75,11 +68,6 @@ class BaseTheme {
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryColor,
         foregroundColor: Colors.black,
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        selectedItemColor: primaryColor,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
       ),
       textTheme: adjusted,
     );

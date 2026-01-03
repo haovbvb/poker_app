@@ -1,163 +1,206 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:poker_app/app/styles/colors.dart';
-import 'package:poker_app/app/root_tab_scaffold.dart';
-import 'package:poker_app/core/utils/context_extensions.dart';
-
-enum _LobbyTier { normal, vip }
-
-class _PokerTableInfo {
-  const _PokerTableInfo({
-    required this.tableNo,
-    required this.buyInRange,
-    required this.blinds,
-    required this.feePerHand,
-    required this.tier,
-  });
-
-  final int tableNo;
-  final String buyInRange;
-  final String blinds;
-  final String feePerHand;
-  final _LobbyTier tier;
-}
-
-const _tables = <_PokerTableInfo>[
-  _PokerTableInfo(
-    tableNo: 1,
-    buyInRange: '150K / 750K',
-    blinds: '2.5K / 5K',
-    feePerHand: '1.5K',
-    tier: _LobbyTier.normal,
-  ),
-  _PokerTableInfo(
-    tableNo: 2,
-    buyInRange: '300K / 1.5M',
-    blinds: '5K / 10K',
-    feePerHand: '3K',
-    tier: _LobbyTier.normal,
-  ),
-  _PokerTableInfo(
-    tableNo: 3,
-    buyInRange: '1.5M / 7.5M',
-    blinds: '25K / 50K',
-    feePerHand: '15K',
-    tier: _LobbyTier.normal,
-  ),
-  _PokerTableInfo(
-    tableNo: 4,
-    buyInRange: '6M / 30M',
-    blinds: '100K / 200K',
-    feePerHand: '60K',
-    tier: _LobbyTier.normal,
-  ),
-  _PokerTableInfo(
-    tableNo: 5,
-    buyInRange: '30M / 150M',
-    blinds: '500K / 1M',
-    feePerHand: '300K',
-    tier: _LobbyTier.vip,
-  ),
-  _PokerTableInfo(
-    tableNo: 6,
-    buyInRange: '150M / 750M',
-    blinds: '2.5M / 5M',
-    feePerHand: '1.5M',
-    tier: _LobbyTier.vip,
-  ),
-  _PokerTableInfo(
-    tableNo: 7,
-    buyInRange: '600M / 3B',
-    blinds: '10M / 20M',
-    feePerHand: '6M',
-    tier: _LobbyTier.vip,
-  ),
-  _PokerTableInfo(
-    tableNo: 8,
-    buyInRange: '3B / 15B',
-    blinds: '50M / 100M',
-    feePerHand: '30M',
-    tier: _LobbyTier.vip,
-  ),
-];
-
-final _lobbyTierProvider = NotifierProvider<_LobbyTierNotifier, _LobbyTier>(
-  _LobbyTierNotifier.new,
-);
-
-class _LobbyTierNotifier extends Notifier<_LobbyTier> {
-  @override
-  _LobbyTier build() => _LobbyTier.normal;
-
-  void setTier(_LobbyTier value) => state = value;
-}
+import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/features/home/settings_dialog.dart';
+import 'package:poker_app/network/api_path.dart';
+import 'package:poker_app/network/api_service.dart';
+import 'package:poker_app/core/utils/toast.dart';
 
 class HomeTab extends ConsumerWidget {
   const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tier = ref.watch(_lobbyTierProvider);
-    final visibleTables = _tables
-        .where((t) => t.tier == tier)
-        .toList(growable: false);
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1A4D6F), Color(0xFF0F2942)],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
             children: [
-              SizedBox(
-                width: 240,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+              // 顶部筹码显示
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: Row(
                   children: [
-                    Text(
-                      '大厅',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AppColors.black09Text,
-                        fontWeight: FontWeight.w600,
+                    // 用户头像
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE67E22),
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: 32,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    _TierButton(
-                      title: '常规桌',
-                      subtitle: '无需订阅',
-                      selected: tier == _LobbyTier.normal,
-                      onTap: () => ref
-                          .read(_lobbyTierProvider.notifier)
-                          .setTier(_LobbyTier.normal),
-                    ),
-                    const SizedBox(height: 12),
-                    _TierButton(
-                      title: '高级桌',
-                      subtitle: '需要订阅',
-                      selected: tier == _LobbyTier.vip,
-                      onTap: () => ref
-                          .read(_lobbyTierProvider.notifier)
-                          .setTier(_LobbyTier.vip),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Page',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const Spacer(),
-                    FilledButton(
-                      onPressed: () =>
-                          ref.read(bottomNavIndexProvider.notifier).setIndex(1),
-                      child: const Text('进入游戏主页'),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      context.l10n.homeTitle,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.black05Text,
+                    // 筹码显示
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        children: [
+                          Text(
+                            '123.23M',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Icon(
+                            Icons.add_circle_outline,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(child: _TableList(tables: visibleTables)),
+              const SizedBox(height: 16),
+              // 中间卡片区域
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      // 公告卡片
+                      Expanded(
+                        child: _PokerCard(
+                          title: '公告',
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF1A4D6F), Color(0xFF0F2942)],
+                          ),
+                          imagePath: 'assets/images/chips_stack.png',
+                          onTap: () {},
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // 高级桌卡片
+                      Expanded(
+                        child: _PokerCard(
+                          title: '高级桌',
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF2B5B7F), Color(0xFF1A4D6F)],
+                          ),
+                          imagePath: 'assets/images/premium_table.png',
+                          onTap: () {},
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // VIP桌卡片
+                      Expanded(
+                        child: _PokerCard(
+                          title: 'VIP-桌',
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF3A6B8F), Color(0xFF2B5B7F)],
+                          ),
+                          imagePath: 'assets/images/vip_table.png',
+                          onTap: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // 底部导航栏
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                ),
+                child: Row(
+                  children: [
+                    _BottomNavIcon(
+                      icon: Icons.shopping_bag_outlined,
+                      label: 'SHOP',
+                      onTap: () {},
+                    ),
+                    const SizedBox(width: 32),
+                    _BottomNavIcon(
+                      icon: Icons.chat_bubble_outline,
+                      label: '',
+                      onTap: () {},
+                    ),
+                    const SizedBox(width: 32),
+                    _BottomNavIcon(
+                      icon: Icons.settings_outlined,
+                      label: '',
+                      onTap: () {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (_) => const SettingsDialog(),
+                        );
+                      },
+                    ),
+                    const Spacer(),
+                    // 快速开始按钮
+                    ElevatedButton(
+                      onPressed: () => _onQuickStart(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFEB3B),
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 48,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        '快速开始',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -166,53 +209,70 @@ class HomeTab extends ConsumerWidget {
   }
 }
 
-class _TierButton extends StatelessWidget {
-  const _TierButton({
+class _PokerCard extends StatelessWidget {
+  const _PokerCard({
     required this.title,
-    required this.subtitle,
-    required this.selected,
+    required this.gradient,
+    required this.imagePath,
     required this.onTap,
   });
 
   final String title;
-  final String subtitle;
-  final bool selected;
+  final Gradient gradient;
+  final String imagePath;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
       onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected
-              ? AppColors.primaryColor.withValues(alpha: 0.08)
-              : null,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: selected
-                ? AppColors.primaryColor.withValues(alpha: 0.25)
-                : Colors.black.withValues(alpha: 0.06),
-          ),
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Text(
-              title,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: AppColors.black09Text,
-                fontWeight: FontWeight.w600,
+            // 背景图片（占位）
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    decoration: BoxDecoration(gradient: gradient),
+                    child: const Center(
+                      child: Icon(
+                        Icons.casino,
+                        color: Colors.white54,
+                        size: 64,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.black05Text,
+            // 标题
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+                ),
               ),
             ),
           ],
@@ -222,130 +282,119 @@ class _TierButton extends StatelessWidget {
   }
 }
 
-class _TableList extends StatelessWidget {
-  const _TableList({required this.tables});
+class _BottomNavIcon extends StatelessWidget {
+  const _BottomNavIcon({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
-  final List<_PokerTableInfo> tables;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 28),
+            if (label.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ],
+          ],
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-            child: Row(
+    );
+  }
+}
+
+Future<void> _onQuickStart(BuildContext context) async {
+  final api = ApiService();
+
+  final buyIn = await showModalBottomSheet<int>(
+    context: context,
+    isScrollControlled: true,
+    builder: (ctx) {
+      final controller = TextEditingController(text: '1000000');
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '输入最大买入筹码',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: '例如 1000000',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
               children: [
-                Text(
-                  '牌桌列表',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: AppColors.black09Text,
-                    fontWeight: FontWeight.w600,
-                  ),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('取消'),
                 ),
                 const Spacer(),
-                Text(
-                  '点击进入（占位）',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.black05Text,
-                  ),
+                ElevatedButton(
+                  onPressed: () {
+                    final raw = controller.text.replaceAll(',', '').trim();
+                    final value = int.tryParse(raw);
+                    if (value == null || value <= 0) {
+                      showToast('请输入有效的买入筹码');
+                      return;
+                    }
+                    Navigator.of(ctx).pop(value);
+                  },
+                  child: const Text('确定'),
                 ),
               ],
             ),
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemBuilder: (context, index) => _TableCard(info: tables[index]),
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemCount: tables.length,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TableCard extends StatelessWidget {
-  const _TableCard({required this.info});
-
-  final _PokerTableInfo info;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: () {},
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '${info.tableNo}',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: AppColors.primaryColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '买入：${info.buyInRange}',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: AppColors.black09Text,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '盲注：${info.blinds}    每局固定消耗：${info.feePerHand}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.black06Text,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              info.tier == _LobbyTier.vip ? 'VIP' : '常规',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: info.tier == _LobbyTier.vip
-                    ? Colors.orange.shade800
-                    : AppColors.black06Text,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
           ],
         ),
-      ),
+      );
+    },
+  );
+
+  if (buyIn == null) return;
+
+  try {
+    final resp = await api.post<Map<String, dynamic>>(
+      ApiPath.v1PokerTablesQuickStart,
+      data: {'max_chips': buyIn},
+      parser: (json) => Map<String, dynamic>.from(json as Map),
     );
+
+    final tableId = resp.result?['table_id'] as String?;
+    if (!resp.isSuccess || tableId == null || tableId.isEmpty) {
+      showToast(resp.message.isNotEmpty ? resp.message : '未获取到牌桌');
+      return;
+    }
+
+    AppRouter.pushGame(tableId);
+  } catch (e) {
+    showToast('快速开始失败: $e');
   }
 }

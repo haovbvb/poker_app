@@ -33,80 +33,90 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 60),
-                  Center(
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Icon(
-                          Icons.eco,
-                          color: AppColors.primaryColor,
-                          size: 48,
-                        ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isLandscape = constraints.maxWidth > constraints.maxHeight;
+              final keyboardVisible =
+                  MediaQuery.viewInsetsOf(context).bottom > 0;
+
+              // No scrolling is allowed, so we compact spacing aggressively when
+              // height is limited (e.g. landscape + keyboard).
+              final compact =
+                  keyboardVisible ||
+                  constraints.maxHeight < (isLandscape ? 420 : 600);
+
+              final horizontalPadding = isLandscape ? 32.0 : 24.0;
+
+              Widget content;
+              if (isLandscape) {
+                content = Row(
+                  children: [
+                    Expanded(child: _BrandingPanel(compact: compact)),
+                    SizedBox(width: compact ? 24 : 40),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: _LoginFormPanel(
+                        nameController: _nameController,
+                        passwordController: _passwordController,
+                        obscurePassword: _obscurePassword,
+                        onTogglePasswordVisibility: () => setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        }),
+                        isSubmitting: _isSubmitting,
+                        agreedToTerms: _agreedToTerms,
+                        onAgreedChanged: (value) => setState(() {
+                          _agreedToTerms = value ?? false;
+                        }),
+                        onSubmit: _onSubmit,
+                        compact: compact,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'TINBOT Merchant',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: AppColors.black09Text,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
+                  ],
+                );
+              } else {
+                content = Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _BrandingPanel(compact: compact),
+                    SizedBox(height: compact ? 24 : 48),
+                    _LoginFormPanel(
+                      nameController: _nameController,
+                      passwordController: _passwordController,
+                      obscurePassword: _obscurePassword,
+                      onTogglePasswordVisibility: () => setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      }),
+                      isSubmitting: _isSubmitting,
+                      agreedToTerms: _agreedToTerms,
+                      onAgreedChanged: (value) => setState(() {
+                        _agreedToTerms = value ?? false;
+                      }),
+                      onSubmit: _onSubmit,
+                      compact: compact,
                     ),
+                  ],
+                );
+              }
+
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: isLandscape ? 960 : 480,
                   ),
-                  const SizedBox(height: 60),
-                  _AccountField(controller: _nameController),
-                  const SizedBox(height: 24),
-                  _PasswordField(
-                    controller: _passwordController,
-                    obscurePassword: _obscurePassword,
-                    onToggleVisibility: () => setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    }),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                    ),
+                    child: Form(key: _formKey, child: content),
                   ),
-                  const SizedBox(height: 32),
-                  _LoginButton(
-                    isSubmitting: _isSubmitting,
-                    agreedToTerms: _agreedToTerms,
-                    onPressed: _onSubmit,
-                  ),
-                  const SizedBox(height: 20),
-                  _TermsCheckbox(
-                    agreed: _agreedToTerms,
-                    onChanged: (value) => setState(() {
-                      _agreedToTerms = value ?? false;
-                    }),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -136,6 +146,110 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         setState(() => _isSubmitting = false);
       }
     }
+  }
+}
+
+class _BrandingPanel extends StatelessWidget {
+  const _BrandingPanel({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final logoSize = compact ? 56.0 : 80.0;
+    final iconSize = compact ? 34.0 : 48.0;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: Container(
+            width: logoSize,
+            height: logoSize,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.eco,
+                color: AppColors.primaryColor,
+                size: iconSize,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: compact ? 12 : 20),
+        Text(
+          'TINBOT Merchant',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: AppColors.black09Text,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LoginFormPanel extends StatelessWidget {
+  const _LoginFormPanel({
+    required this.nameController,
+    required this.passwordController,
+    required this.obscurePassword,
+    required this.onTogglePasswordVisibility,
+    required this.isSubmitting,
+    required this.agreedToTerms,
+    required this.onAgreedChanged,
+    required this.onSubmit,
+    required this.compact,
+  });
+
+  final TextEditingController nameController;
+  final TextEditingController passwordController;
+  final bool obscurePassword;
+  final VoidCallback onTogglePasswordVisibility;
+  final bool isSubmitting;
+  final bool agreedToTerms;
+  final ValueChanged<bool?> onAgreedChanged;
+  final VoidCallback onSubmit;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _AccountField(controller: nameController),
+        SizedBox(height: compact ? 14 : 24),
+        _PasswordField(
+          controller: passwordController,
+          obscurePassword: obscurePassword,
+          onToggleVisibility: onTogglePasswordVisibility,
+        ),
+        SizedBox(height: compact ? 18 : 32),
+        _LoginButton(
+          isSubmitting: isSubmitting,
+          agreedToTerms: agreedToTerms,
+          onPressed: onSubmit,
+        ),
+        SizedBox(height: compact ? 12 : 20),
+        _TermsCheckbox(agreed: agreedToTerms, onChanged: onAgreedChanged),
+      ],
+    );
   }
 }
 
@@ -265,7 +379,9 @@ class _LoginButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(26),
           ),
-          disabledBackgroundColor: AppColors.primaryColor.withValues(alpha: 0.4),
+          disabledBackgroundColor: AppColors.primaryColor.withValues(
+            alpha: 0.4,
+          ),
           disabledForegroundColor: Colors.white,
         ),
         child: isSubmitting

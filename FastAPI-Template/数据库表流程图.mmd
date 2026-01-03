@@ -1,0 +1,192 @@
+%% Auto-generated from migrations/models/*.py
+%% Regenerate: python scripts/generate_db_tables_mmd.py
+erDiagram
+    %% table: aerich
+    AERICH {
+        int id PK
+        varchar version
+        varchar app
+        json content
+    }
+
+    %% table: api
+    API {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar path
+        varchar method
+        varchar summary
+        varchar tags
+    }
+
+    %% table: audit_log
+    AUDIT_LOG {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        int user_id
+        varchar username
+        varchar module
+        varchar summary
+        varchar method
+        varchar path
+        int status
+        int response_time
+        json request_args
+        json response_body
+    }
+
+    %% table: dept
+    DEPT {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar name
+        varchar desc
+        int is_deleted
+        int order
+        int parent_id
+    }
+
+    %% table: deptclosure
+    DEPTCLOSURE {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        int ancestor
+        int descendant
+        int level
+    }
+
+    %% table: file_mapping
+    FILE_MAPPING {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar file_id
+        varchar original_filename
+        varchar file_type
+        bigint file_size
+        int upload_user_id
+        varchar file_path
+    }
+
+    %% table: menu
+    MENU {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar name
+        json remark
+        varchar menu_type
+        varchar icon
+        varchar path
+        int order
+        int parent_id
+        int is_hidden
+        varchar component
+        int keepalive
+        varchar redirect
+    }
+
+    %% table: message
+    MESSAGE {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar title
+        text content
+        varchar type
+        datetime send_time
+    }
+
+    %% table: role
+    ROLE {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar name
+        varchar desc
+    }
+
+    %% table: role_api
+    ROLE_API {
+        bigint role_id FK
+        bigint api_id FK
+    }
+
+    %% table: role_menu
+    ROLE_MENU {
+        bigint role_id FK
+        bigint menu_id FK
+    }
+
+    %% table: subscription_fact
+    SUBSCRIPTION_FACT {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar dedupe_key
+        varchar platform
+        int user_id
+        varchar product_id
+        varchar environment
+        varchar ios_original_transaction_id
+        varchar ios_transaction_id
+        varchar android_purchase_token
+        varchar android_order_id
+        varchar android_ack_state
+        varchar status
+        datetime expires_at
+        datetime event_time
+        varchar source
+        json raw_payload
+        varchar raw_payload_hash
+    }
+
+    %% table: subscription_snapshot
+    SUBSCRIPTION_SNAPSHOT {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        int user_id
+        varchar platform
+        varchar product_id
+        varchar status
+        datetime expires_at
+        int auto_renew
+        datetime last_event_at
+        varchar source
+        varchar ios_original_transaction_id
+        varchar android_purchase_token
+    }
+
+    %% table: user
+    USER {
+        int id PK
+        datetime created_at
+        datetime updated_at
+        varchar username
+        varchar alias
+        varchar email
+        varchar phone
+        varchar password
+        int is_active
+        int is_superuser
+        datetime last_login
+        int dept_id
+    }
+
+    %% table: user_role
+    USER_ROLE {
+        bigint user_id FK
+        bigint role_id FK
+    }
+
+    ROLE ||--o{ ROLE_MENU : role_id
+    MENU ||--o{ ROLE_MENU : menu_id
+    ROLE ||--o{ ROLE_API : role_id
+    API ||--o{ ROLE_API : api_id
+    USER ||--o{ USER_ROLE : user_id
+    ROLE ||--o{ USER_ROLE : role_id

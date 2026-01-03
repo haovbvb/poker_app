@@ -1,0 +1,47 @@
+flowchart TD
+    %% Lobby / Table 生命周期（产品 & 前端）
+
+    AppStart[启动 App] --> Auth[登录 / 游客进入]
+    Auth --> Lobby[进入大厅]
+
+    Lobby --> Mode{选择模式}
+    Mode -->|快速开始| FindTable[匹配牌桌]
+    Mode -->|普通 / VIP 桌| FindTable
+    Mode -->|赛事| FindTable
+
+    FindTable --> EnterTable[进入牌桌]
+
+    %% 牌桌规则配置：进入后先拿到配置快照，客户端据此渲染与校验
+    EnterTable --> TableConfig[获取牌桌规则配置快照<br/>Blinds/Ante/Straddle/Buy-in/计时/抽水/断线等]
+    TableConfig --> ConfigItems[规则项-示例<br/>- SB/BB/Ante/Straddle-可选<br/>- 最小/最大买入、最小带出<br/>- 桌人数/可观战/入局规则<br/>- 行动时长/TimeBank/超时惩罚<br/>- 加注规则-最小加注、上限、全下处理<br/>- 抽水/服务费-Rake-与封顶<br/>- 断线/坐出策略与离桌结算<br/>- 补码/再买入规则-立即/下局生效]
+
+    ConfigItems --> BuyInGate{是否已买入/带入?}
+    BuyInGate -->|否| BuyIn[选择买入金额 / 带入筹码]
+    BuyInGate -->|是| SeatAssign[选座/自动分配座位]
+    BuyIn --> SeatAssign
+
+    SeatAssign --> PlayerState{玩家状态}
+    PlayerState -->|观战| Spectate[观战-不参与牌局]
+    PlayerState -->|坐下 Sit| SitDown[坐下]
+    PlayerState -->|坐出 Sit-out| SitOut[坐出-暂离]
+
+    Spectate --> SeatAssign
+    SitOut --> SeatAssign
+
+    SitDown --> BlindJoinGate{入桌规则}
+    BlindJoinGate -->|等待大盲| WaitBB[等待 BB 再入局]
+    BlindJoinGate -->|补盲| PostBlind[补盲-Post BB/Dead SB]
+    WaitBB --> HandStartGate
+    PostBlind --> HandStartGate
+
+    HandStartGate{开局条件满足?<br/>>=2个有效玩家} -->|否| WaitMore[等待更多玩家/恢复] --> HandStartGate
+    HandStartGate -->|是| HandSM[进入 Hand 状态机]
+
+    %% 离桌/退出
+    SeatAssign --> LeaveIntent{是否离桌?}
+    LeaveIntent -->|否| HandStartGate
+    LeaveIntent -->|是| LeaveGate{是否在手中/已投入筹码?}
+    LeaveGate -->|是| LeaveLater[标记: 本局结束后离开]
+    LeaveGate -->|否| LeaveNow[立即离开并结算带出]
+    LeaveLater --> TableExit[返回大厅]
+    LeaveNow --> TableExit

@@ -1,0 +1,84 @@
+flowchart TD
+
+    %% =====================
+    %% Entry
+    %% =====================
+    A[用户触发订阅<br/>点击订阅按钮 / 功能拦截] --> B{平台判断}
+
+    B -->|iOS| IOS_UI[iOS 订阅页<br/>StoreKit / StoreKit2]
+    B -->|Android| AND_UI[Android 订阅页<br/>Google Billing]
+
+    %% =====================
+    %% Client Purchase
+    %% =====================
+    IOS_UI --> IOS_Pay[发起购买]
+    AND_UI --> AND_Pay[发起购买]
+
+    IOS_Pay --> IOS_Result{购买结果}
+    AND_Pay --> AND_Result{购买结果}
+
+    IOS_Result -->|成功| IOS_Cred[iOS 凭证<br/>transaction_id / original_transaction_id<br/>signedTransactionInfo JWS]
+    IOS_Result -->|失败| Fail[购买失败 / 取消]
+
+    AND_Result -->|成功| AND_Cred[Android 凭证<br/>purchaseToken / orderId]
+    AND_Result -->|失败| Fail
+
+    %% =====================
+    %% Client -> Server
+    %% =====================
+    IOS_Cred --> VerifyReq[客户端提交到服务端<br/>platform / product_id / user_id<br/>可选 idempotency_key]
+    AND_Cred --> VerifyReq
+
+    %% =====================
+    %% Server: Idempotency / Dedupe
+    %% =====================
+    VerifyReq --> Dedupe{幂等与去重<br/>iOS: original_transaction_id<br/>Android: purchaseToken}
+    Dedupe -->|已处理| ReturnSnapshot[返回订阅快照<br/>不重复发放]
+    Dedupe -->|未处理| PlatformVerify{平台校验}
+
+    %% =====================
+    %% Server: Platform Verify
+    %% =====================
+    PlatformVerify -->|iOS| AppleVerify[Apple 校验<br/>bundle_id / product_id / environment<br/>original_transaction_id / expires_at]
+    PlatformVerify -->|Android| GoogleVerify[Google 校验<br/>package_name / product_id<br/>purchaseToken / expiryTimeMillis]
+
+    GoogleVerify --> Ack[Android Acknowledge<br/>ack_state=ACKNOWLEDGED]
+    Ack --> VerifyOK{校验通过}
+    AppleVerify --> VerifyOK
+
+    VerifyOK -->|否| VerifyFail[校验失败<br/>拒绝发放权益]
+    VerifyOK -->|是| PersistFact[写入交易事实 不可变<br/>通用: platform / product_id / user_id<br/>iOS: original_transaction_id / transaction_id / expires_at<br/>Android: purchaseToken / orderId / expiry_time / ack_state]
+
+    %% =====================
+    %% Derive Entitlement
+    %% =====================
+    PersistFact --> Derive[计算订阅权益快照<br/>current_status / expires_at / source]
+    Derive --> SaveSnapshot[更新订阅快照到数据库<br/>user_id / product_id / status / expires_at<br/>auto_renew / platform / last_event_at]
+    SaveSnapshot --> SyncClient[返回订阅快照给客户端]
+    SyncClient --> SubActive[订阅生效<br/>解锁功能]
+
+    %% =====================
+    %% Async Notifications
+    %% =====================
+    AppleNotify[Apple Server Notification] --> HookIn[服务端回调入口]
+    GoogleNotify[Google RTDN] --> HookIn
+
+    HookIn --> VerifySig[验签与校验来源<br/>Apple: JWS 验签<br/>Google: Pub/Sub 签名/来源校验]
+    VerifySig --> HookDedupe{回调去重}
+    HookDedupe -->|重复| HookDrop[忽略]
+    HookDedupe -->|新回调| HookOrder[乱序处理<br/>按事件时间或序列推进]
+    HookOrder --> PersistEvent[写入回调事件事实 不可变<br/>event_id 或 hash / event_time<br/>status_change / expires_at]
+    PersistEvent --> Derive
+
+    %% =====================
+    %% Reconciliation Job
+    %% =====================
+    Cron[定时对账修复任务<br/>兜底回调丢失与失败重试] --> PullPlatform[拉取平台订阅状态]
+    PullPlatform --> PersistFact
+
+    %% =====================
+    %% Restore
+    %% =====================
+    RestoreReq[用户点击恢复订阅] --> RestoreFetch[客户端拉取本机交易记录]
+    RestoreFetch --> VerifyReq
+

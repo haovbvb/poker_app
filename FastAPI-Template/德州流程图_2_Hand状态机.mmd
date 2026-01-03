@@ -1,0 +1,130 @@
+flowchart TD
+    %% Hand 状态机（后端）
+
+    HandInit[新一局初始化] --> AssignBtn[移交/确定 Button]
+    AssignBtn --> ForcedBets[强制下注<br/>SB/BB/可选Ante/Straddle]
+    ForcedBets --> DealHole[发手牌-每人2张]
+
+    %% Preflop
+    DealHole --> StreetPre[Preflop 下注轮]
+
+    %% Preflop betting round
+    StreetPre --> TurnGatePre[轮到玩家行动-按位置]
+    TurnGatePre --> ActionTimerPre[开始倒计时]
+    ActionTimerPre --> ActionChoicePre{玩家动作}
+    ActionChoicePre -->|Fold| Folded[弃牌]
+    ActionChoicePre -->|Check| CheckPre[过牌]
+    ActionChoicePre -->|Call| CallPre[跟注]
+    ActionChoicePre -->|Bet| BetPre[下注]
+    ActionChoicePre -->|Raise| RaisePre[加注]
+    ActionChoicePre -->|All-in| AllInPre[全下]
+    ActionTimerPre -->|超时| AutoActionPre[自动处理<br/>优先Check否则Fold]
+
+    Folded --> UpdateStatePre[更新玩家状态/底池/轮次]
+    CheckPre --> UpdateStatePre
+    CallPre --> UpdateStatePre
+    BetPre --> UpdateStatePre
+    RaisePre --> UpdateStatePre
+    AllInPre --> SidePotPre[生成/更新主池与边池]
+    AutoActionPre --> UpdateStatePre
+    SidePotPre --> UpdateStatePre
+
+    UpdateStatePre --> EarlyWinPre{是否只剩一人未弃牌?}
+    EarlyWinPre -->|是| WinNoShow[直接获胜<br/>无需摊牌]
+    EarlyWinPre -->|否| RoundEndPre{下注轮是否结束?<br/>都已跟注/过牌/全下}
+    RoundEndPre -->|否| TurnGatePre
+    RoundEndPre -->|是| AllInRunoutGate{剩余玩家是否都已全下?}
+    AllInRunoutGate -->|是| Runout[补齐公共牌<br/>直接发Flop/Turn/River]
+    AllInRunoutGate -->|否| DealFlop[发翻牌 Flop-3张]
+
+    %% Flop
+    DealFlop --> StreetFlop[Flop 下注轮]
+    StreetFlop --> TurnGateFlop[轮到玩家行动] --> ActionTimerFlop[开始倒计时] --> ActionChoiceFlop{玩家动作}
+    ActionChoiceFlop -->|Fold| Folded
+    ActionChoiceFlop -->|Check| CheckFlop[过牌]
+    ActionChoiceFlop -->|Call| CallFlop[跟注]
+    ActionChoiceFlop -->|Bet| BetFlop[下注]
+    ActionChoiceFlop -->|Raise| RaiseFlop[加注]
+    ActionChoiceFlop -->|All-in| AllInFlop[全下]
+    ActionTimerFlop -->|超时| AutoActionFlop[自动处理]
+    CheckFlop --> UpdateStateFlop[更新状态/底池/轮次]
+    CallFlop --> UpdateStateFlop
+    BetFlop --> UpdateStateFlop
+    RaiseFlop --> UpdateStateFlop
+    AutoActionFlop --> UpdateStateFlop
+    AllInFlop --> SidePotFlop[生成/更新主池与边池] --> UpdateStateFlop
+    UpdateStateFlop --> EarlyWinFlop{是否只剩一人?}
+    EarlyWinFlop -->|是| WinNoShow
+    EarlyWinFlop -->|否| RoundEndFlop{下注轮结束?}
+    RoundEndFlop -->|否| TurnGateFlop
+    RoundEndFlop -->|是| AllInRunoutGate2{是否都全下?}
+    AllInRunoutGate2 -->|是| Runout
+    AllInRunoutGate2 -->|否| DealTurn[发转牌 Turn-1张]
+
+    %% Turn
+    DealTurn --> StreetTurn[Turn 下注轮]
+    StreetTurn --> TurnGateTurn[轮到玩家行动] --> ActionTimerTurn[开始倒计时] --> ActionChoiceTurn{玩家动作}
+    ActionChoiceTurn -->|Fold| Folded
+    ActionChoiceTurn -->|Check| CheckTurn[过牌]
+    ActionChoiceTurn -->|Call| CallTurn[跟注]
+    ActionChoiceTurn -->|Bet| BetTurn[下注]
+    ActionChoiceTurn -->|Raise| RaiseTurn[加注]
+    ActionChoiceTurn -->|All-in| AllInTurn[全下]
+    ActionTimerTurn -->|超时| AutoActionTurn[自动处理]
+    CheckTurn --> UpdateStateTurn[更新状态/底池/轮次]
+    CallTurn --> UpdateStateTurn
+    BetTurn --> UpdateStateTurn
+    RaiseTurn --> UpdateStateTurn
+    AutoActionTurn --> UpdateStateTurn
+    AllInTurn --> SidePotTurn[生成/更新主池与边池] --> UpdateStateTurn
+    UpdateStateTurn --> EarlyWinTurn{是否只剩一人?}
+    EarlyWinTurn -->|是| WinNoShow
+    EarlyWinTurn -->|否| RoundEndTurn{下注轮结束?}
+    RoundEndTurn -->|否| TurnGateTurn
+    RoundEndTurn -->|是| AllInRunoutGate3{是否都全下?}
+    AllInRunoutGate3 -->|是| Runout
+    AllInRunoutGate3 -->|否| DealRiver[发河牌 River-1张]
+
+    %% River
+    DealRiver --> StreetRiver[River 下注轮]
+    StreetRiver --> TurnGateRiver[轮到玩家行动] --> ActionTimerRiver[开始倒计时] --> ActionChoiceRiver{玩家动作}
+    ActionChoiceRiver -->|Fold| Folded
+    ActionChoiceRiver -->|Check| CheckRiver[过牌]
+    ActionChoiceRiver -->|Call| CallRiver[跟注]
+    ActionChoiceRiver -->|Bet| BetRiver[下注]
+    ActionChoiceRiver -->|Raise| RaiseRiver[加注]
+    ActionChoiceRiver -->|All-in| AllInRiver[全下]
+    ActionTimerRiver -->|超时| AutoActionRiver[自动处理]
+    CheckRiver --> UpdateStateRiver[更新状态/底池/轮次]
+    CallRiver --> UpdateStateRiver
+    BetRiver --> UpdateStateRiver
+    RaiseRiver --> UpdateStateRiver
+    AutoActionRiver --> UpdateStateRiver
+    AllInRiver --> SidePotRiver[生成/更新主池与边池] --> UpdateStateRiver
+    UpdateStateRiver --> EarlyWinRiver{是否只剩一人?}
+    EarlyWinRiver -->|是| WinNoShow
+    EarlyWinRiver -->|否| RoundEndRiver{下注轮结束?}
+    RoundEndRiver -->|否| TurnGateRiver
+    RoundEndRiver -->|是| Showdown[进入摊牌 Showdown]
+
+    Runout --> Showdown
+
+    %% Showdown / Payout
+    Showdown --> RevealGate[亮牌流程<br/>可简化: 全员亮牌]
+    RevealGate --> HandEval[计算牌力<br/>每人最优5张]
+    HandEval --> PotOrder[按主池/边池顺序结算]
+    PotOrder --> SplitGate{是否平分底池?}
+    SplitGate -->|是| SplitPot[平分/按筹码规则处理余数]
+    SplitGate -->|否| SingleWin[分配给赢家]
+    SplitPot --> Settle[更新筹码/余额/统计]
+    SingleWin --> Settle
+    WinNoShow --> Settle
+
+    Settle --> HandHistory[记录 Hand History / 回放事件]
+    HandHistory --> PostHand[手后处理<br/>移交Button/清理状态]
+    PostHand --> RebuyGate{是否补码/再买入?}
+    RebuyGate -->|是| Rebuy[补码/自动补码-可选] --> NextHandGate
+    RebuyGate -->|否| NextHandGate
+
+    NextHandGate{继续下一局?<br/>且>=2有效玩家} -->|是| HandInit
+    NextHandGate -->|否| TableIdle[回到牌桌空闲/等待玩家]
