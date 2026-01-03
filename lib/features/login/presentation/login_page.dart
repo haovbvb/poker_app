@@ -1,10 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/app/app_router.dart';
-import 'package:merchant_app/app/styles/colors.dart';
-import 'package:merchant_app/core/utils/context_extensions.dart';
-import 'package:merchant_app/features/login/providers/auth_controller.dart';
+import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/app/styles/colors.dart';
+import 'package:poker_app/features/login/providers/auth_controller.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -30,7 +29,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     ref.watch(authNotifierProvider);
 
     return Scaffold(
@@ -55,7 +53,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
+                            color: Colors.black.withValues(alpha: 0.06),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -261,13 +259,13 @@ class _LoginButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isActive
               ? AppColors.primaryColor
-              : AppColors.primaryColor.withOpacity(0.4),
+              : AppColors.primaryColor.withValues(alpha: 0.4),
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(26),
           ),
-          disabledBackgroundColor: AppColors.primaryColor.withOpacity(0.4),
+          disabledBackgroundColor: AppColors.primaryColor.withValues(alpha: 0.4),
           disabledForegroundColor: Colors.white,
         ),
         child: isSubmitting

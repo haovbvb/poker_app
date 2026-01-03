@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:merchant_app/core/constants/storage_keys.dart';
-import 'package:merchant_app/core/services/language_store.dart';
-import 'package:merchant_app/core/utils/hud.dart';
-import 'package:merchant_app/core/utils/logger.dart';
-import 'package:merchant_app/core/utils/toast.dart';
-import 'package:merchant_app/network/api_path.dart';
+import 'package:poker_app/core/constants/storage_keys.dart';
+import 'package:poker_app/core/services/language_store.dart';
+import 'package:poker_app/core/utils/hud.dart';
+import 'package:poker_app/core/utils/logger.dart';
+import 'package:poker_app/core/utils/toast.dart';
+import 'package:poker_app/network/api_path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'network_exceptions.dart';
@@ -62,8 +62,10 @@ class ApiClient {
 
           if (_authToken != null && _authToken!.isNotEmpty) {
             options.headers['AccessToken'] = _authToken;
+            options.headers['Authorization'] = 'Bearer $_authToken';
           } else {
             options.headers.remove('AccessToken');
+            options.headers.remove('Authorization');
           }
 
           if (options.headers.isNotEmpty) {

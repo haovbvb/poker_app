@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/app/app_router.dart';
-import 'package:merchant_app/app/styles/colors.dart';
-import 'package:merchant_app/core/utils/context_extensions.dart';
-import 'package:merchant_app/features/login/models/auth_session.dart';
-import 'package:merchant_app/features/login/providers/auth_controller.dart';
+import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/app/styles/colors.dart';
+import 'package:poker_app/core/utils/context_extensions.dart';
+import 'package:poker_app/features/login/models/auth_session.dart';
+import 'package:poker_app/features/login/providers/auth_controller.dart';
 
 class _ProfileAction {
   const _ProfileAction({
@@ -31,11 +31,12 @@ class ProfileTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(authNotifierProvider);
     final session = AuthSession.instance.current;
-    final rawName = session != null ? session.name.trim() : '';
-    final rawPhone = session != null ? session.phone.trim() : '';
+    final rawName = session != null ? session.username.trim() : '';
+    final rawTier = session != null ? session.tier.trim() : '';
     final name = rawName.isNotEmpty ? rawName : context.l10n.tabMe;
-    final phone = rawPhone.isNotEmpty ? rawPhone : context.l10n.profileGreeting;
-    final avatarUrl = session?.avatar.trim();
+    final subtitle = rawTier.isNotEmpty
+        ? rawTier
+        : context.l10n.profileGreeting;
 
     final actionsPrimary = [
       _ProfileAction(
@@ -85,8 +86,7 @@ class ProfileTab extends ConsumerWidget {
             children: [
               _ProfileHeader(
                 name: name,
-                subtitle: phone,
-                avatarUrl: avatarUrl,
+                subtitle: subtitle,
                 onLogout: () async {
                   await ref.read(authNotifierProvider.notifier).logout();
                 },
@@ -110,13 +110,11 @@ class _ProfileHeader extends StatelessWidget {
     required this.name,
     required this.subtitle,
     required this.onLogout,
-    this.avatarUrl,
   });
 
   final String name;
   final String subtitle;
   final Future<void> Function() onLogout;
-  final String? avatarUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +146,7 @@ class _ProfileHeader extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _Avatar(avatarUrl: avatarUrl, displayName: name),
+                _Avatar(displayName: name),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -196,9 +194,8 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.avatarUrl, required this.displayName});
+  const _Avatar({required this.displayName});
 
-  final String? avatarUrl;
   final String displayName;
 
   @override
@@ -207,13 +204,6 @@ class _Avatar extends StatelessWidget {
     final initials = sanitized.isNotEmpty
         ? sanitized.substring(0, 1).toUpperCase()
         : '?';
-    if (avatarUrl != null && avatarUrl!.isNotEmpty) {
-      return CircleAvatar(
-        radius: 32,
-        backgroundImage: NetworkImage(avatarUrl!),
-        onBackgroundImageError: (_, __) {},
-      );
-    }
     return CircleAvatar(
       radius: 32,
       child: Text(initials, style: Theme.of(context).textTheme.titleMedium),

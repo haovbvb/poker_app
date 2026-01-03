@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/app/app_router.dart';
-import 'package:merchant_app/core/utils/toast.dart';
-import 'package:merchant_app/features/login/providers/auth_controller.dart';
+import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/core/utils/toast.dart';
+import 'package:poker_app/features/login/providers/auth_controller.dart';
 
 import 'api_client.dart';
 import 'base_response.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:merchant_app/app/app_router.dart';
+import 'package:poker_app/app/app_router.dart';
 
 /// 简易 Toast 封装，支持重复调用时覆盖上一个提示。
 class Toast {
@@ -42,7 +42,7 @@ class Toast {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.85),
+                    color: Colors.black.withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

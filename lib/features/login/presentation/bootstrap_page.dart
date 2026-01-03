@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/app/app_router.dart';
-import 'package:merchant_app/features/login/models/auth_result.dart';
-import 'package:merchant_app/features/login/providers/auth_controller.dart';
-import 'package:merchant_app/network/network.dart';
+import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/features/login/models/auth_result.dart';
+import 'package:poker_app/features/login/providers/auth_controller.dart';
+import 'package:poker_app/network/network.dart';
 
 /// 启动引导页：判断登录态后跳转 Home 或 Login。
 class BootstrapPage extends ConsumerStatefulWidget {
@@ -28,13 +28,19 @@ class _BootstrapPageState extends ConsumerState<BootstrapPage> {
   Future<void> _bootstrap() async {
     try {
       final token = await _authNotifier.loadTokenFromStorage();
+      final refreshToken = await _authNotifier.loadRefreshTokenFromStorage();
       if (!mounted) {
         return;
       }
 
       if (token != null && token.isNotEmpty) {
         _authNotifier.setToken(token);
-        _refreshToken();
+
+        if (refreshToken != null && refreshToken.isNotEmpty) {
+          await _refreshToken(refreshToken);
+        } else {
+          AppRouter.goHome();
+        }
       } else {
         await _authNotifier.clearSession();
         AppRouter.goLogin();
@@ -52,10 +58,11 @@ class _BootstrapPageState extends ConsumerState<BootstrapPage> {
     }
   }
 
-  Future<void> _refreshToken() async {
+  Future<void> _refreshToken(String refreshToken) async {
     try {
       final response = await _apiService.post<AuthResult>(
         ApiPath.refreshToken,
+        data: {'refresh_token': refreshToken},
         parser: _parseAuthResult,
         showHud: false,
         notifyOnError: false,
@@ -70,7 +77,6 @@ class _BootstrapPageState extends ConsumerState<BootstrapPage> {
         AppRouter.goLogin();
       }
     } catch (_) {
-
       await _authNotifier.clearSession();
       AppRouter.goLogin();
     }

@@ -25,5 +25,5 @@ class BaseResponse<T> {
     );
   }
 
-  bool get isSuccess => code == 0 || code == 1000;
+  bool get isSuccess => code == 200 || code == 0 || code == 1000;
 }

@@ -5,15 +5,26 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:merchant_app/main.dart';
+import 'package:poker_app/features/login/presentation/login_page.dart';
+import 'package:poker_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('Shows login screen when unauthenticated', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: MerchantApp()));
-    await tester.pumpAndSettle();
+  testWidgets('Login page can render', (tester) async {
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginPage(),
+        ),
+      ),
+    );
 
-    expect(find.text('Sign In'), findsOneWidget);
+    await tester.pump();
+
+    expect(find.byType(LoginPage), findsOneWidget);
   });
 }

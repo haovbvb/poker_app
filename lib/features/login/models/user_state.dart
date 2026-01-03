@@ -1,4 +1,4 @@
-import 'package:merchant_app/features/login/models/auth_result.dart';
+import 'package:poker_app/features/login/models/auth_result.dart';
 
 /// Holds the authenticated user and token info managed by Riverpod.
 class UserState {

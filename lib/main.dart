@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/app/app_router.dart';
-import 'package:merchant_app/app/theme.dart';
-import 'package:merchant_app/features/me/providers/language_notifier.dart';
-import 'package:merchant_app/l10n/app_localizations.dart';
+import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/app/theme.dart';
+import 'package:poker_app/features/me/providers/language_notifier.dart';
+import 'package:poker_app/l10n/app_localizations.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // ProviderScope 注入 Riverpod 的依赖树；MerchantApp 承载路由 / 主题等顶层配置。
-  runApp(const ProviderScope(child: MerchantApp()));
+
+  // 横屏为主（允许左右横屏）。
+  SystemChrome.setPreferredOrientations(const [
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
+  // ProviderScope 注入 Riverpod 的依赖树；PokerApp 承载路由 / 主题等顶层配置。
+  runApp(const ProviderScope(child: PokerApp()));
 }
 
 final _lightThemeProvider = Provider<ThemeData>(
@@ -19,8 +27,8 @@ final _themeModeProvider = NotifierProvider<_ThemeModeNotifier, ThemeMode>(
   _ThemeModeNotifier.new,
 );
 
-class MerchantApp extends ConsumerWidget {
-  const MerchantApp({super.key});
+class PokerApp extends ConsumerWidget {
+  const PokerApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

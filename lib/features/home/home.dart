@@ -1,164 +1,219 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/app/styles/colors.dart';
-import 'package:merchant_app/core/utils/context_extensions.dart';
-import 'package:merchant_app/features/home/widgets/vehicle_map.dart';
+import 'package:poker_app/app/styles/colors.dart';
+import 'package:poker_app/app/root_tab_scaffold.dart';
+import 'package:poker_app/core/utils/context_extensions.dart';
 
-class _VehicleInfo {
-  const _VehicleInfo({
-    required this.serialNumber,
-    required this.bindingId,
-    required this.address,
-    required this.distance,
-    required this.imageAsset,
-    this.requiresMaintenance = false,
+enum _LobbyTier { normal, vip }
+
+class _PokerTableInfo {
+  const _PokerTableInfo({
+    required this.tableNo,
+    required this.buyInRange,
+    required this.blinds,
+    required this.feePerHand,
+    required this.tier,
   });
 
-  final String serialNumber;
-  final String bindingId;
-  final String address;
-  final String distance;
-  final String imageAsset;
-  final bool requiresMaintenance;
+  final int tableNo;
+  final String buyInRange;
+  final String blinds;
+  final String feePerHand;
+  final _LobbyTier tier;
 }
 
-const _mockVehicles = <_VehicleInfo>[
-  _VehicleInfo(
-    serialNumber: 'AS101FD23300018',
-    bindingId: '1003504591',
-    address: 'China 6, Panyu District CN Guangdong Province',
-    distance: '200m',
-    imageAsset: 'assets/images/scooter_green.png',
-    requiresMaintenance: true,
+const _tables = <_PokerTableInfo>[
+  _PokerTableInfo(
+    tableNo: 1,
+    buyInRange: '150K / 750K',
+    blinds: '2.5K / 5K',
+    feePerHand: '1.5K',
+    tier: _LobbyTier.normal,
   ),
-  _VehicleInfo(
-    serialNumber: 'AS101FD23300018',
-    bindingId: '1003504591',
-    address: 'China 6, Panyu District CN Guangdong Province',
-    distance: '450m',
-    imageAsset: 'assets/images/scooter_white.png',
+  _PokerTableInfo(
+    tableNo: 2,
+    buyInRange: '300K / 1.5M',
+    blinds: '5K / 10K',
+    feePerHand: '3K',
+    tier: _LobbyTier.normal,
   ),
-  _VehicleInfo(
-    serialNumber: 'AS101FD23300018',
-    bindingId: '1003504591',
-    address: 'China 6, Panyu District CN Guangdong Province',
-    distance: '781m',
-    imageAsset: 'assets/images/scooter_yellow.png',
+  _PokerTableInfo(
+    tableNo: 3,
+    buyInRange: '1.5M / 7.5M',
+    blinds: '25K / 50K',
+    feePerHand: '15K',
+    tier: _LobbyTier.normal,
   ),
-  _VehicleInfo(
-    serialNumber: 'AS101FD23300018',
-    bindingId: '1003504591',
-    address: 'China 6, Panyu District CN Guangdong Province',
-    distance: '1.4km',
-    imageAsset: 'assets/images/scooter_green.png',
-    requiresMaintenance: true,
+  _PokerTableInfo(
+    tableNo: 4,
+    buyInRange: '6M / 30M',
+    blinds: '100K / 200K',
+    feePerHand: '60K',
+    tier: _LobbyTier.normal,
   ),
-  _VehicleInfo(
-    serialNumber: 'AS101FD23300018',
-    bindingId: '1003504591',
-    address: 'China 6, Panyu District CN Guangdong Province',
-    distance: '1.9km',
-    imageAsset: 'assets/images/scooter_white.png',
+  _PokerTableInfo(
+    tableNo: 5,
+    buyInRange: '30M / 150M',
+    blinds: '500K / 1M',
+    feePerHand: '300K',
+    tier: _LobbyTier.vip,
+  ),
+  _PokerTableInfo(
+    tableNo: 6,
+    buyInRange: '150M / 750M',
+    blinds: '2.5M / 5M',
+    feePerHand: '1.5M',
+    tier: _LobbyTier.vip,
+  ),
+  _PokerTableInfo(
+    tableNo: 7,
+    buyInRange: '600M / 3B',
+    blinds: '10M / 20M',
+    feePerHand: '6M',
+    tier: _LobbyTier.vip,
+  ),
+  _PokerTableInfo(
+    tableNo: 8,
+    buyInRange: '3B / 15B',
+    blinds: '50M / 100M',
+    feePerHand: '30M',
+    tier: _LobbyTier.vip,
   ),
 ];
+
+final _lobbyTierProvider = NotifierProvider<_LobbyTierNotifier, _LobbyTier>(
+  _LobbyTierNotifier.new,
+);
+
+class _LobbyTierNotifier extends Notifier<_LobbyTier> {
+  @override
+  _LobbyTier build() => _LobbyTier.normal;
+
+  void setTier(_LobbyTier value) => state = value;
+}
 
 class HomeTab extends ConsumerWidget {
   const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
+    final tier = ref.watch(_lobbyTierProvider);
+    final visibleTables = _tables
+        .where((t) => t.tier == tier)
+        .toList(growable: false);
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          const Positioned.fill(child: VehicleMap()),
-          _HomeOverlays(title: l10n.homeTitle),
-          const _VehicleDraggableSheet(vehicles: _mockVehicles),
-        ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 240,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      '大厅',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppColors.black09Text,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _TierButton(
+                      title: '常规桌',
+                      subtitle: '无需订阅',
+                      selected: tier == _LobbyTier.normal,
+                      onTap: () => ref
+                          .read(_lobbyTierProvider.notifier)
+                          .setTier(_LobbyTier.normal),
+                    ),
+                    const SizedBox(height: 12),
+                    _TierButton(
+                      title: '高级桌',
+                      subtitle: '需要订阅',
+                      selected: tier == _LobbyTier.vip,
+                      onTap: () => ref
+                          .read(_lobbyTierProvider.notifier)
+                          .setTier(_LobbyTier.vip),
+                    ),
+                    const Spacer(),
+                    FilledButton(
+                      onPressed: () =>
+                          ref.read(bottomNavIndexProvider.notifier).setIndex(1),
+                      child: const Text('进入游戏主页'),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.l10n.homeTitle,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.black05Text,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(child: _TableList(tables: visibleTables)),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class _HomeOverlays extends StatelessWidget {
-  const _HomeOverlays({required this.title});
+class _TierButton extends StatelessWidget {
+  const _TierButton({
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    final theme = Theme.of(context);
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primaryColor.withValues(alpha: 0.08)
+              : null,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected
+                ? AppColors.primaryColor.withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: 0.06),
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 color: AppColors.black09Text,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          color: AppColors.black04Text,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Search for bound vehicles',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.black05Text),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.filter_alt_outlined),
-                    color: AppColors.black07Text,
-                    onPressed: () {},
-                  ),
-                ),
-              ],
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.black05Text,
+              ),
             ),
           ],
         ),
@@ -167,76 +222,10 @@ class _HomeOverlays extends StatelessWidget {
   }
 }
 
-class _VehicleDraggableSheet extends StatelessWidget {
-  const _VehicleDraggableSheet({required this.vehicles});
+class _TableList extends StatelessWidget {
+  const _TableList({required this.tables});
 
-  final List<_VehicleInfo> vehicles;
-
-  @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.35,
-      minChildSize: 0.2,
-      maxChildSize: 0.85,
-      builder: (context, controller) {
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(28),
-                topRight: Radius.circular(28),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x1F000000),
-                  blurRadius: 14,
-                  offset: Offset(0, -4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 8),
-                Container(
-                  width: 48,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: ListView.separated(
-                    controller: controller,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    itemBuilder: (context, index) {
-                      final vehicle = vehicles[index % vehicles.length];
-                      return _VehicleCard(info: vehicle);
-                    },
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemCount: vehicles.length,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _VehicleCard extends StatelessWidget {
-  const _VehicleCard({required this.info});
-
-  final _VehicleInfo info;
+  final List<_PokerTableInfo> tables;
 
   @override
   Widget build(BuildContext context) {
@@ -245,85 +234,40 @@ class _VehicleCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black.withOpacity(0.05)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
       ),
-      padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _VehicleImage(asset: info.imageAsset),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'SN: ${info.serialNumber}',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: AppColors.black09Text,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        if (info.requiresMaintenance)
-                          const _StatusChip(
-                            label: 'To be maintained',
-                            borderColor: AppColors.danger,
-                            textColor: AppColors.danger,
-                          ),
-                        if (info.requiresMaintenance) const SizedBox(width: 8),
-                        _StatusChip(
-                          label: 'Binding ID: ${info.bindingId}',
-                          borderColor: AppColors.black02Text,
-                          textColor: AppColors.black06Text,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Icon(Icons.location_on, size: 18, color: AppColors.black04Text),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  info.address,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.black06Text,
-                    height: 1.3,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+            child: Row(
+              children: [
+                Text(
+                  '牌桌列表',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: AppColors.black09Text,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.campaign_outlined,
-                size: 18,
-                color: AppColors.black04Text,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                info.distance,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.black06Text,
+                const Spacer(),
+                Text(
+                  '点击进入（占位）',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.black05Text,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemBuilder: (context, index) => _TableCard(info: tables[index]),
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemCount: tables.length,
+            ),
           ),
         ],
       ),
@@ -331,63 +275,75 @@ class _VehicleCard extends StatelessWidget {
   }
 }
 
-class _VehicleImage extends StatelessWidget {
-  const _VehicleImage({required this.asset});
+class _TableCard extends StatelessWidget {
+  const _TableCard({required this.info});
 
-  final String asset;
+  final _PokerTableInfo info;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: () {},
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        width: 72,
-        height: 72,
-        color: Colors.white,
-        child: Image.asset(
-          asset,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) {
-            return Container(
-              color: Colors.grey.shade200,
-              child: const Icon(
-                Icons.electric_scooter,
-                size: 36,
-                color: Colors.grey,
-              ),
-            );
-          },
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
         ),
-      ),
-    );
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({
-    required this.label,
-    required this.borderColor,
-    required this.textColor,
-  });
-
-  final String label;
-  final Color borderColor;
-  final Color textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: borderColor.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor.withOpacity(0.5)),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: textColor,
-          fontWeight: FontWeight.w500,
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '${info.tableNo}',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '买入：${info.buyInRange}',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: AppColors.black09Text,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '盲注：${info.blinds}    每局固定消耗：${info.feePerHand}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.black06Text,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              info.tier == _LobbyTier.vip ? 'VIP' : '常规',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: info.tier == _LobbyTier.vip
+                    ? Colors.orange.shade800
+                    : AppColors.black06Text,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:merchant_app/app/app_router.dart';
+import 'package:poker_app/app/app_router.dart';
 
 /// 全局加载 HUD，支持多个请求叠加时按计数显示/隐藏。
 class Hud {
@@ -28,13 +28,13 @@ class Hud {
     _entry = OverlayEntry(
       builder: (context) => Positioned.fill(
         child: Container(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           alignment: Alignment.center,
           child: Container(
             width: 96,
             height: 96,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Center(

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:merchant_app/app/root_tab_scaffold.dart';
-import 'package:merchant_app/core/widgets/common_webview_page.dart';
-import 'package:merchant_app/features/login/models/user_state.dart';
-import 'package:merchant_app/features/login/presentation/bootstrap_page.dart';
-import 'package:merchant_app/features/login/presentation/login_page.dart';
-import 'package:merchant_app/features/login/providers/auth_controller.dart';
-import 'package:merchant_app/features/me/about_page.dart';
-import 'package:merchant_app/features/me/language.dart';
-import 'package:merchant_app/features/me/message.dart';
-import 'package:merchant_app/features/me/user_agreement_page.dart';
+import 'package:poker_app/app/root_tab_scaffold.dart';
+import 'package:poker_app/core/widgets/common_webview_page.dart';
+import 'package:poker_app/features/login/models/user_state.dart';
+import 'package:poker_app/features/login/presentation/bootstrap_page.dart';
+import 'package:poker_app/features/login/presentation/login_page.dart';
+import 'package:poker_app/features/login/providers/auth_controller.dart';
+import 'package:poker_app/features/me/about_page.dart';
+import 'package:poker_app/features/me/language.dart';
+import 'package:poker_app/features/me/message.dart';
 
 class AppRouter {
   AppRouter._();

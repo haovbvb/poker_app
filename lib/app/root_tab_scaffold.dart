@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/features/home/home.dart';
-import 'package:merchant_app/features/me/me.dart';
-import 'package:merchant_app/features/work/work.dart';
-import 'package:merchant_app/l10n/app_localizations.dart';
+import 'package:poker_app/features/home/home.dart';
+import 'package:poker_app/features/me/me.dart';
+import 'package:poker_app/features/work/work.dart';
+import 'package:poker_app/l10n/app_localizations.dart';
 
 final bottomNavIndexProvider = NotifierProvider<_BottomNavIndexNotifier, int>(
   _BottomNavIndexNotifier.new,

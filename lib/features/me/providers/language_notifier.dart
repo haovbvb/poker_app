@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:merchant_app/core/services/language_store.dart';
+import 'package:poker_app/core/services/language_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final languageNotifierProvider = NotifierProvider<LanguageNotifier, Locale>(

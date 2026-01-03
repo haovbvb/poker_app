@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:merchant_app/core/utils/context_extensions.dart';
+import 'package:poker_app/core/utils/context_extensions.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MessagePage extends StatefulWidget {
@@ -119,9 +119,8 @@ class _MessageTile extends StatelessWidget {
                       Text(
                         time,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodySmall?.color?.withOpacity(
-                            0.6,
-                          ),
+                          color: theme.textTheme.bodySmall?.color
+                              ?.withValues(alpha: 0.6),
                         ),
                       ),
                     ],

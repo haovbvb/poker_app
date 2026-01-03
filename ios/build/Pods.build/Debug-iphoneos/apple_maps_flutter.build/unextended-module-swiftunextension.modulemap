@@ -1,4 +1,0 @@
-
-module apple_maps_flutter.__Swift {
-  exclude header "apple_maps_flutter-Swift.h"
-}
