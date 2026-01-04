@@ -26,7 +26,7 @@ class SettingsDialog extends ConsumerWidget {
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.25),
-              width: 2,
+              width: 1,
             ),
             gradient: const LinearGradient(
               begin: Alignment.topCenter,
@@ -54,7 +54,7 @@ class SettingsDialog extends ConsumerWidget {
                       '设置',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 22,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -75,82 +75,64 @@ class SettingsDialog extends ConsumerWidget {
                     children: [
                       // Left column
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const _SettingsRow(
-                              label: '［音乐］',
-                              trailing: _CheckBadge(checked: true),
-                            ),
-                            const SizedBox(height: 18),
-                            const _SettingsRow(
-                              label: '［音效］',
-                              trailing: _CheckBadge(checked: true),
-                            ),
-                            const SizedBox(height: 18),
-                            const _SettingsRow(
-                              label: '［震动］',
-                              trailing: _CheckBadge(checked: false),
-                            ),
-                            const Spacer(),
-                            _GoldButton(text: '联系客服', onPressed: () {}),
-                          ],
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _SettingsRow(
+                                label: '［音乐］',
+                                trailing: _CheckBadge(checked: true),
+                              ),
+                              const SizedBox(height: 18),
+                              const _SettingsRow(
+                                label: '［音效］',
+                                trailing: _CheckBadge(checked: true),
+                              ),
+                              const SizedBox(height: 18),
+                              _GoldButton(text: '联系客服', onPressed: () {}),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 20),
                       // Right column
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const _SettingsRow(
-                              label: '［通知］',
-                              trailing: _ArrowBadge(expanded: false),
-                            ),
-                            const SizedBox(height: 14),
-                            const _SettingsRow(
-                              label: '［语言选择］',
-                              trailing: _DropdownBadge(text: '中文'),
-                            ),
-                            const SizedBox(height: 14),
-                            const _SettingsRow(
-                              label: '［大厅选择］',
-                              trailing: _DropdownBadge(text: '2D大厅'),
-                            ),
-                            const SizedBox(height: 16),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: _OutlineButton(
-                                text: '自定义快速投注',
-                                onPressed: () {},
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _SettingsRow(
+                                label: '［语言选择］',
+                                trailing: _DropdownBadge(text: '中文'),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: _OutlineButton(
-                                text: '退出登录',
-                                onPressed: () async {
-                                  final notifier = ref.read(
-                                    authNotifierProvider.notifier,
-                                  );
-                                  await notifier.clearSession();
-                                  if (context.mounted) {
-                                    Navigator.of(context).pop();
-                                  }
-                                  AppRouter.goLogin();
-                                },
+                              const SizedBox(height: 14),
+                              const SizedBox(height: 16),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: _OutlineButton(
+                                  text: '退出登录',
+                                  onPressed: () async {
+                                    final notifier = ref.read(
+                                      authNotifierProvider.notifier,
+                                    );
+                                    await notifier.clearSession();
+                                    if (context.mounted) {
+                                      Navigator.of(context).pop();
+                                    }
+                                    AppRouter.goLogin();
+                                  },
+                                ),
                               ),
-                            ),
-                            const Spacer(),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: _GoldButton(
-                                text: '公平性认证',
-                                onPressed: () {},
+                              const SizedBox(height: 16),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: _GoldButton(
+                                  text: '公平性认证',
+                                  onPressed: () {},
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -201,7 +183,7 @@ class _SettingsRow extends StatelessWidget {
           label,
           style: const TextStyle(
             color: Color(0xFFB9D7FF),
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -223,13 +205,13 @@ class _CheckBadge extends StatelessWidget {
     final icon = checked ? Icons.check : Icons.check;
     final iconColor = checked ? Colors.white : Colors.white54;
     return Container(
-      width: 42,
-      height: 42,
+      width: 20,
+      height: 20,
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Icon(icon, color: iconColor, size: 28),
+      child: Icon(icon, color: iconColor, size: 14),
     );
   }
 }
@@ -271,7 +253,7 @@ class _DropdownBadge extends StatelessWidget {
           text,
           style: const TextStyle(
             color: Color(0xFFB9D7FF),
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -292,23 +274,23 @@ class _OutlineButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 220,
-      height: 52,
+      height: 36,
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.white,
           side: BorderSide(
             color: Colors.white.withValues(alpha: 0.25),
-            width: 2,
+            width: 1,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(18),
           ),
           backgroundColor: Colors.black.withValues(alpha: 0.2),
         ),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
         ),
       ),
     );
@@ -325,7 +307,7 @@ class _GoldButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 240,
-      height: 52,
+      height: 40,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -336,7 +318,7 @@ class _GoldButton extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -357,7 +339,7 @@ class _FooterLink extends StatelessWidget {
         text,
         style: const TextStyle(
           color: Color(0xFFB9D7FF),
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
       ),
