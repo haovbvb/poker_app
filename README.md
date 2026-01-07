@@ -3,7 +3,7 @@
 Flutter 德州扑克App，整合 Riverpod 状态管理、Dio 网络封装以及多语言支持，提供登录、首页、工作台与“我的”等核心模块。
 通用 UI 组件库 jui, 参考文档: https://www.yuque.com/jui_flutter/kb/howistv001f1ghp9
 
-后端项目目录：FastAPI-Template 
+后端项目目录：FastAPI-Template, Api 文档：http://localhost:8000/openapi.json
 
 ## 环境要求
 
