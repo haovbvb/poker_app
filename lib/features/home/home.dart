@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/core/utils/toast.dart';
 import 'package:poker_app/features/home/settings_dialog.dart';
 import 'package:poker_app/network/api_path.dart';
 import 'package:poker_app/network/api_service.dart';
-import 'package:poker_app/core/utils/toast.dart';
 
 class HomeTab extends ConsumerWidget {
   const HomeTab({super.key});
@@ -319,71 +319,13 @@ class _BottomNavIcon extends StatelessWidget {
 }
 
 Future<void> _onQuickStart(BuildContext context) async {
+  const defaultBuyIn = 1000000;
   final api = ApiService();
-
-  final buyIn = await showModalBottomSheet<int>(
-    context: context,
-    isScrollControlled: true,
-    builder: (ctx) {
-      final controller = TextEditingController(text: '1000000');
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
-          left: 16,
-          right: 16,
-          top: 16,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '输入最大买入筹码',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: '例如 1000000',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('取消'),
-                ),
-                const Spacer(),
-                ElevatedButton(
-                  onPressed: () {
-                    final raw = controller.text.replaceAll(',', '').trim();
-                    final value = int.tryParse(raw);
-                    if (value == null || value <= 0) {
-                      showToast('请输入有效的买入筹码');
-                      return;
-                    }
-                    Navigator.of(ctx).pop(value);
-                  },
-                  child: const Text('确定'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
-
-  if (buyIn == null) return;
 
   try {
     final resp = await api.post<Map<String, dynamic>>(
       ApiPath.v1PokerTablesQuickStart,
-      data: {'max_chips': buyIn},
+      data: {'max_chips': defaultBuyIn},
       parser: (json) => Map<String, dynamic>.from(json as Map),
     );
 

@@ -129,6 +129,12 @@ class PokerTable:
         self._redis_lock_key = f"poker:table:{table_id}:lock"
         self._stream_last_id: str = "0-0"
         self._stream_task: asyncio.Task | None = None
+        # Default: behave like production (auto-start hands when possible).
+        # Dev scripts can disable this to stop after a single hand.
+        self._auto_start_hands: bool = True
+
+    def set_auto_start_hands(self, enabled: bool) -> None:
+        self._auto_start_hands = bool(enabled)
 
     def _dump_state(self) -> dict[str, Any]:
         cfg = self.state.config
@@ -593,7 +599,8 @@ class PokerTable:
                 self.state.seats.pop(member.seat_no, None)
             self.state.members.pop(user_id, None)
             await self.emit("PLAYER_LEFT", {"user_id": user_id})
-        await self._maybe_start_hand()
+        if self._auto_start_hands:
+            await self._maybe_start_hand()
 
     async def buyin(self, user_id: int, amount: int) -> None:
         async with self._locked_state():
@@ -645,7 +652,8 @@ class PokerTable:
                 "PLAYER_SEATED",
                 {"user_id": user_id, "seat_no": seat_no, "stack": member.buyin},
             )
-        await self._maybe_start_hand()
+        if self._auto_start_hands:
+            await self._maybe_start_hand()
 
     async def spectate(self, user_id: int) -> None:
         async with self._locked_state():
@@ -667,7 +675,8 @@ class PokerTable:
                 member.seat_no = None
             member.status = "spectator"
             await self.emit("PLAYER_SPECTATE", {"user_id": user_id})
-        await self._maybe_start_hand()
+        if self._auto_start_hands:
+            await self._maybe_start_hand()
 
     async def sitout(self, user_id: int) -> None:
         async with self._locked_state():
@@ -689,7 +698,8 @@ class PokerTable:
                 seat = self.state.seats[member.seat_no]
                 seat.status = "sitout"
             await self.emit("PLAYER_SITOUT", {"user_id": user_id})
-        await self._maybe_start_hand()
+        if self._auto_start_hands:
+            await self._maybe_start_hand()
 
     async def _force_fold_locked(self, seat_no: int, *, reason: str) -> None:
         hand = self.state.hand
@@ -1174,7 +1184,7 @@ class PokerTable:
 
         # Auto-continue: if the hand ended, try to start the next one.
         # This must run outside the locked section to avoid deadlocks.
-        if self.state.hand is None:
+        if self._auto_start_hands and self.state.hand is None:
             await self._maybe_start_hand()
 
     async def _advance_after_action_locked(self, now_ms: int) -> None:
