@@ -104,7 +104,6 @@ class HomeTab extends ConsumerWidget {
                             end: Alignment.bottomRight,
                             colors: [Color(0xFF1A4D6F), Color(0xFF0F2942)],
                           ),
-                          imagePath: 'assets/images/chips_stack.png',
                           onTap: () {},
                         ),
                       ),
@@ -118,7 +117,6 @@ class HomeTab extends ConsumerWidget {
                             end: Alignment.bottomRight,
                             colors: [Color(0xFF2B5B7F), Color(0xFF1A4D6F)],
                           ),
-                          imagePath: 'assets/images/premium_table.png',
                           onTap: () {},
                         ),
                       ),
@@ -132,7 +130,6 @@ class HomeTab extends ConsumerWidget {
                             end: Alignment.bottomRight,
                             colors: [Color(0xFF3A6B8F), Color(0xFF2B5B7F)],
                           ),
-                          imagePath: 'assets/images/vip_table.png',
                           onTap: () {},
                         ),
                       ),
@@ -213,13 +210,11 @@ class _PokerCard extends StatelessWidget {
   const _PokerCard({
     required this.title,
     required this.gradient,
-    required this.imagePath,
     required this.onTap,
   });
 
   final String title;
   final Gradient gradient;
-  final String imagePath;
   final VoidCallback onTap;
 
   @override
@@ -241,23 +236,11 @@ class _PokerCard extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // 背景图片（占位）
             Positioned.fill(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    decoration: BoxDecoration(gradient: gradient),
-                    child: const Center(
-                      child: Icon(
-                        Icons.casino,
-                        color: Colors.white54,
-                        size: 64,
-                      ),
-                    ),
-                  ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(gradient: gradient),
+                child: const Center(
+                  child: Icon(Icons.casino, color: Colors.white54, size: 64),
                 ),
               ),
             ),

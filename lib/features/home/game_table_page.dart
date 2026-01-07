@@ -310,19 +310,29 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
 
     final actionReq = _actionRequest;
     final youUserId = snapshot?.youUserId;
-    final yourSeatNo = snapshot?.seats
+    final yourSeatNoFromSeats = snapshot?.seats
         .where((s) => youUserId != null && s.userId == youUserId)
         .map((s) => s.seatNo)
         .cast<int?>()
         .firstOrNull;
+    final yourSeatNoFromMembers = snapshot?.members
+        .where((m) => youUserId != null && m.userId == youUserId)
+        .map((m) => m.seatNo)
+        .cast<int?>()
+        .firstOrNull;
+    final yourSeatNo = yourSeatNoFromSeats ?? yourSeatNoFromMembers;
+    // 动作栏显示以服务端 ACTION_REQUESTED 为准：
+    // 有时快照里的 actingSeat 更新会有一点延迟，直接依赖它会导致按钮不出现。
     final showActions =
         snapshot != null &&
         actionReq != null &&
         youUserId != null &&
         actionReq.userId == youUserId &&
-        yourSeatNo != null &&
-        snapshot.hand?.actingSeat == yourSeatNo &&
-        actionReq.actionToken > 0;
+        actionReq.actionToken > 0 &&
+        // seat 信息以现有数据为准；如果本地还没同步到 seat，也不要因此隐藏按钮。
+        (yourSeatNo == null || actionReq.seatNo == yourSeatNo);
+
+    final canAct = !_loading && _wsConnected;
 
     return Scaffold(
       appBar: AppBar(
@@ -378,12 +388,11 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
             if (showActions)
               _ActionBar(
                 request: actionReq,
-                onFold: _loading ? null : () => _sendAction('fold'),
-                onCheckOrCall: _loading
-                    ? null
-                    : () =>
-                          _sendAction(actionReq.toCall > 0 ? 'call' : 'check'),
-                onRaise: _loading ? null : _showRaise,
+                onFold: canAct ? () => _sendAction('fold') : null,
+                onCheckOrCall: canAct
+                    ? () => _sendAction(actionReq.toCall > 0 ? 'call' : 'check')
+                    : null,
+                onRaise: canAct ? _showRaise : null,
               ),
           ],
         ),
@@ -508,7 +517,16 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   void _sendAction(String action, {int? amount}) {
     final req = _actionRequest;
     final ws = _ws;
-    if (req == null || ws == null) return;
+    if (req == null) return;
+    if (!_wsConnected || ws == null) {
+      showToast('网络未连接，无法操作');
+      return;
+    }
+
+    // 先隐藏动作栏，避免重复点击（后续会收到快照/事件刷新）。
+    if (mounted) {
+      setState(() => _actionRequest = null);
+    }
 
     ws.sendAction(actionToken: req.actionToken, action: action, amount: amount);
   }
@@ -516,6 +534,10 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   Future<void> _showRaise() async {
     final req = _actionRequest;
     if (req == null) return;
+    if (!_wsConnected || _ws == null) {
+      showToast('网络未连接，无法操作');
+      return;
+    }
     final controller = TextEditingController(text: req.minRaiseTo.toString());
 
     final amount = await showModalBottomSheet<int>(

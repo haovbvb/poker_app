@@ -12,7 +12,10 @@ class AboutPage extends StatelessWidget {
           children: [
             // 顶部栏
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8,
+              ),
               child: Row(
                 children: [
                   IconButton(
@@ -36,9 +39,10 @@ class AboutPage extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Colors.transparent,
                     ),
-                    child: Image.asset(
-                      'assets/logo.png', // 替换为你的图标路径
-                      fit: BoxFit.contain,
+                    child: const Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                      size: 56,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -73,7 +77,10 @@ class AboutPage extends StatelessWidget {
                   ),
                 ),
                 child: ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 20,
+                  ),
                   children: const [
                     VersionTile(
                       version: 'V2.0.0',
@@ -133,8 +140,8 @@ class VersionTile extends StatelessWidget {
     final color = isLatest
         ? Colors.red
         : isCritical
-            ? Colors.red
-            : Colors.green;
+        ? Colors.red
+        : Colors.green;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

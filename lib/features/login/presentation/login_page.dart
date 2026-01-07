@@ -178,14 +178,10 @@ class _BrandingPanel extends StatelessWidget {
                 ),
               ],
             ),
-            child: Image.asset(
-              'assets/images/logo.png',
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => Icon(
-                Icons.eco,
-                color: AppColors.primaryColor,
-                size: iconSize,
-              ),
+            child: Icon(
+              Icons.eco,
+              color: AppColors.primaryColor,
+              size: iconSize,
             ),
           ),
         ),

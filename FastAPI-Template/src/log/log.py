@@ -137,7 +137,8 @@ class LoggingConfig:
     def _patch_record(self, record: Dict[str, Any]) -> None:
         """为每条日志记录附加序列化后的内容"""
         record.setdefault("extra", {})
-        record["extra"]["serialized"] = self._serialize_record(record)
+        serialized = self._serialize_record(record)
+        record["extra"] = {"serialized": serialized}
 
     def setup_logger(self):
         """配置日志输出"""
