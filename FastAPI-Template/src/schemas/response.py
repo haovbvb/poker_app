@@ -124,6 +124,7 @@ class CurrentUserInfo(BaseModel):
     avatar: str | None = Field(default=None, description="头像")
     roles: list[str] = Field(default_factory=list, description="角色列表")
     permissions: list[str] = Field(default_factory=list, description="权限列表")
+    wallet_chips: int = Field(default=0, description="当前钱包余额")
 
 
 # ============= 基础信息响应模型 =============

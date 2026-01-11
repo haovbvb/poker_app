@@ -54,6 +54,11 @@ def _format_event(ev: dict[str, Any]) -> str:
     et = ev.get("type")
     payload = ev.get("payload") or {}
 
+    # 开发期调试：如果事件里带了 hole_cards（通常只在 debug/admin 流里），也打印出来。
+    # hole_cards 预期形态：{user_id: ["As", "Kd"], ...}
+    if isinstance(payload, dict) and payload.get("hole_cards"):
+        return f"{et} {json.dumps(payload, ensure_ascii=False)}"
+
     if et in {"HAND_STARTED", "HAND_ENDED", "SHOWDOWN", "STREET_DEALT"}:
         return f"{et} {json.dumps(payload, ensure_ascii=False)}"
 
@@ -179,6 +184,22 @@ async def simulate_one_hand(
         await asyncio.sleep(0.01)
 
     target_hand_id = table.state.hand.hand_id
+
+    # 打印所有玩家手牌（开发期：全量可见）
+    # HandState.hole_cards: {user_id: [c1,c2]}
+    # 有些实现可能在 HAND_STARTED 后异步填充 hole_cards；这里等一小会儿再打印。
+    t_cards0 = time.time()
+    while True:
+        hole_cards = dict(table.state.hand.hole_cards or {})
+        if hole_cards or (time.time() - t_cards0) > 0.5:
+            break
+        await asyncio.sleep(0.01)
+
+    print("\nHOLE_CARDS")
+    for seat_no in sorted(table.state.seats.keys()):
+        seat = table.state.seats[seat_no]
+        cards = hole_cards.get(int(seat.user_id))
+        print(f"seat {seat_no}: user {seat.user_id} cards={cards}")
 
     # 关键：只跑这一手，禁止自动开下一手
     table.set_auto_start_hands(False)

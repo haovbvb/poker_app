@@ -9,6 +9,7 @@ from schemas.response import (
     UserUpdateResponse,
 )
 from schemas.users import UserCreate, UserUpdate
+from schemas.wallet import AdminWalletTopUpIn, AdminWalletTopUpOut
 from services.user_service import user_service
 
 router = APIRouter()
@@ -67,4 +68,18 @@ async def delete_user(
 @router.post("/reset_password", summary="重置密码", response_model=ResponseBase[None])
 async def reset_password(user_id: int = Body(..., description="用户ID", embed=True)):
     result = await user_service.reset_user_password(user_id)
+    return result
+
+
+@router.post(
+    "/{user_id}/wallet/topup",
+    summary="手动帮用户充值筹码",
+    response_model=ResponseBase[AdminWalletTopUpOut],
+)
+async def admin_wallet_topup(user_id: int, payload: AdminWalletTopUpIn):
+    result = await user_service.admin_topup_user_chips(
+        user_id=user_id,
+        amount=payload.amount,
+        note=payload.note,
+    )
     return result

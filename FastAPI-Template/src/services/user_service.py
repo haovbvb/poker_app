@@ -1,13 +1,17 @@
 """用户服务层 - 统一用户业务逻辑"""
 
 from tortoise.expressions import Q
+from tortoise.transactions import in_transaction
 
 from repositories.dept import dept_repository
 from repositories.user import user_repository
 from schemas.base import Fail, Success, SuccessExtra
 from schemas.users import UserCreate, UserUpdate
 from services.base_service import BaseService
+from services.subscription_tier import TIER_POLICY, get_user_effective_tier, tier_to_name
 from utils.cache import cached, clear_user_cache
+
+from core.ctx import CTX_USER_ID
 
 
 class UserService(BaseService):
@@ -131,6 +135,73 @@ class UserService(BaseService):
         except Exception as e:
             self.logger.error(f"重置密码失败: {str(e)}")
             return Fail(msg="重置密码失败")
+
+    async def admin_topup_user_chips(
+        self,
+        *,
+        user_id: int,
+        amount: int,
+        note: str | None = None,
+    ) -> Success:
+        """管理员手动为指定用户充值筹码（受订阅钱包上限约束）"""
+
+        if amount <= 0:
+            return Fail(code=400, msg="amount 必须大于 0")
+
+        user_obj = await user_repository.get(id=user_id)
+        if not user_obj:
+            return Fail(code=404, msg="用户不存在")
+
+        operator_id = int(CTX_USER_ID.get() or 0)
+
+        try:
+            tier = await get_user_effective_tier(user_id=user_id)
+            cap = int(TIER_POLICY[tier].wallet_chip_cap)
+
+            async with in_transaction() as conn:
+                from models.wallet import UserWallet
+
+                wallet_locked = (
+                    await UserWallet.select_for_update()
+                    .using_db(conn)
+                    .filter(user_id=user_id)
+                    .first()
+                )
+                if not wallet_locked:
+                    wallet_locked = UserWallet(user_id=user_id, chips=0)
+                    await wallet_locked.save(using_db=conn)
+
+                wallet_before = int(wallet_locked.chips)
+                requested = wallet_before + int(amount)
+                if requested > cap:
+                    return Fail(
+                        code=403,
+                        error_key="subscription.wallet_cap_exceeded",
+                        error_params={
+                            "cap": cap,
+                            "requested": requested,
+                            "current": tier_to_name(tier),
+                        },
+                    )
+
+                wallet_locked.chips = requested
+                await wallet_locked.save(using_db=conn)
+
+            data = {
+                "user_id": user_id,
+                "operator_id": operator_id,
+                "amount": int(amount),
+                "wallet_before": wallet_before,
+                "wallet_after": requested,
+                "tier": tier_to_name(tier),
+                "cap": cap,
+                "note": note,
+            }
+            return Success(msg="充值成功", data=data)
+
+        except Exception as e:
+            self.logger.error(f"管理员充值筹码失败: {str(e)}")
+            return Fail(msg="充值失败")
 
     def _build_user_search_filters(
         self,

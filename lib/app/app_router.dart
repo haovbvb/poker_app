@@ -54,13 +54,17 @@ class AppRouter {
           if (tableId == null) {
             return const Scaffold(body: Center(child: Text('缺少牌桌ID')));
           }
-          return GameTablePage(tableId: tableId);
+          final auto = state.uri.queryParameters['auto'];
+          final autoPlay = auto == '1' || auto == 'true';
+          return GameTablePage(tableId: tableId, autoPlay: autoPlay);
         },
       ),
       GoRoute(
         path: userAgreementPath,
         name: 'user_agreement',
-        builder: (context, state) => const CommonWebViewPage(initialUrl: 'https://book.flutterchina.club/'),
+        builder: (context, state) => const CommonWebViewPage(
+          initialUrl: 'https://book.flutterchina.club/',
+        ),
       ),
       GoRoute(
         path: aboutPath,
@@ -109,7 +113,8 @@ class AppRouter {
 
   static void goLogin() => router.go(loginPath);
   static void goSplash() => router.go(splashPath);
-  static void pushGame(String tableId) => router.push('/poker/$tableId');
+  static void pushGame(String tableId, {bool autoPlay = false}) =>
+      router.push('/poker/$tableId${autoPlay ? '?auto=1' : ''}');
 }
 
 class _GoRouterRefreshNotifier extends ChangeNotifier {

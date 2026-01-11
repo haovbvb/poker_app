@@ -14,6 +14,7 @@ from core.ctx import CTX_USER_ID
 from core.dependency import DependAuth
 from models.admin import User
 from repositories.user import user_repository
+from repositories.wallet import user_wallet_repository
 from schemas.base import Fail, Success
 from schemas.login import (
     CredentialsSchema,
@@ -190,6 +191,9 @@ async def get_userinfo(current_user: User = DependAuth):
     user_obj = await user_repository.get(id=user_id)
     user_dict = await user_obj.to_dict()
     user_dict["tier"] = tier_to_name(await get_user_effective_tier(user_id=user_id))
+
+    wallet = await user_wallet_repository.get_by_user_id(user_id=int(user_id))
+    user_dict["wallet_chips"] = int(wallet.chips) if wallet else 0
     return Success(data=user_dict)
 
 

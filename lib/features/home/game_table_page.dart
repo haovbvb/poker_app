@@ -9,15 +9,21 @@ import 'package:poker_app/network/api_path.dart';
 import 'package:poker_app/network/api_service.dart';
 
 class GameTablePage extends ConsumerStatefulWidget {
-  const GameTablePage({super.key, required this.tableId});
+  const GameTablePage({
+    super.key,
+    required this.tableId,
+    this.autoPlay = false,
+  });
 
   final String tableId;
+  final bool autoPlay;
 
   @override
   ConsumerState<GameTablePage> createState() => _GameTablePageState();
 }
 
 class _GameTablePageState extends ConsumerState<GameTablePage> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _api = ApiService();
   PokerTableSnapshot? _snapshot;
   bool _loading = false;
@@ -32,8 +38,88 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   Timer? _refreshDebounce;
   Timer? _reconnectTimer;
 
+  int? _lastAutoActionToken;
+
   bool _autoSeatInProgress = false;
   int _autoSeatLastAttemptMs = 0;
+
+  Future<void> _standUp() async {
+    setState(() => _loading = true);
+    try {
+      await _api.post<void>(
+        ApiPath.v1PokerTableSpectate(widget.tableId),
+        parser: (_) {},
+        toastOnBusinessError: true,
+      );
+      showToast('已站起');
+      await _refresh();
+    } catch (e) {
+      setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _changeTable() async {
+    const fallbackMaxChips = 1000000;
+    final snap = _snapshot;
+
+    // 尽量用你当前买入/桌子上限来选择同档位桌。
+    final youId = snap?.youUserId;
+    final memberBuyin = snap?.members
+        .where((m) => youId != null && m.userId == youId)
+        .map((m) => m.buyin)
+        .cast<int?>()
+        .firstOrNull;
+    final maxChips = (memberBuyin != null && memberBuyin > 0)
+        ? memberBuyin
+        : (snap?.config.maxBuyin ?? fallbackMaxChips);
+
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      // 先断开当前桌连接并离桌。
+      await _wsSub?.cancel();
+      _wsSub = null;
+      await _ws?.disconnect();
+      _ws?.dispose();
+      _ws = null;
+      await _api.post<void>(
+        ApiPath.v1PokerTableLeave(widget.tableId),
+        parser: (_) {},
+        toastOnBusinessError: false,
+      );
+
+      // 快速开始：自动买入/坐下/补 1 个机器人，确保能开局。
+      final resp = await _api.post<Map<String, dynamic>>(
+        ApiPath.v1PokerTablesQuickStart,
+        data: {
+          'max_chips': maxChips,
+          'auto_buyin': maxChips,
+          'auto_seat': true,
+          'fill_bots': 1,
+        },
+        parser: (json) => Map<String, dynamic>.from(json as Map),
+      );
+
+      final tableId = resp.result?['table_id'] as String?;
+      if (!resp.isSuccess || tableId == null || tableId.isEmpty) {
+        showToast(resp.message.isNotEmpty ? resp.message : '未获取到新牌桌');
+        return;
+      }
+
+      // 换桌：替换当前路由，避免堆栈越来越深。
+      final path = '/poker/$tableId${widget.autoPlay ? '?auto=1' : ''}';
+      AppRouter.router.go(path);
+    } catch (e) {
+      setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   @override
   void initState() {
@@ -235,8 +321,70 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
           Map<String, dynamic>.from(payload),
         );
         if (!mounted) return;
+
         setState(() => _actionRequest = req);
+
+        // 自动托管：收到轮到自己行动时，自动 check/call。
+        if (widget.autoPlay) {
+          final youUserId = _snapshot?.youUserId;
+          if (youUserId != null && req.userId == youUserId) {
+            if (_lastAutoActionToken != req.actionToken) {
+              _lastAutoActionToken = req.actionToken;
+              // 轻微延迟，避免与 UI setState/WS 状态竞争。
+              Timer(const Duration(milliseconds: 120), () {
+                if (!mounted) return;
+                if (_actionRequest?.actionToken != req.actionToken) return;
+                _sendAction(req.toCall > 0 ? 'call' : 'check');
+              });
+            }
+          }
+        }
       }
+      return;
+    }
+
+    if (type == 'STREET_DEALT') {
+      final payload = msg['payload'];
+      if (payload is Map) {
+        final boardRaw = payload['board'];
+        final street = payload['street']?.toString();
+        if (boardRaw is List && street != null) {
+          final cards = boardRaw.map((e) => e.toString()).toList();
+          if (!mounted) return;
+          setState(() {
+            final snap = _snapshot;
+            final hand = snap?.hand;
+            if (snap != null && hand != null) {
+              final updatedHand = PokerHandInfo(
+                handId: hand.handId,
+                street: street,
+                pot: hand.pot,
+                currentBet: hand.currentBet,
+                minRaiseTo: hand.minRaiseTo,
+                actingSeat: hand.actingSeat,
+                actionDeadlineMs: hand.actionDeadlineMs,
+                players: hand.players,
+                board: cards,
+              );
+              _snapshot = PokerTableSnapshot(
+                table: snap.table,
+                config: snap.config,
+                seats: snap.seats,
+                members: snap.members,
+                hand: updatedHand,
+                youUserId: snap.youUserId,
+                youHoleCards: snap.youHoleCards,
+              );
+            }
+          });
+        }
+      }
+      // 同步一次快照，确保 pot/actingSeat 等也更新。
+      _refreshDebounce?.cancel();
+      _refreshDebounce = Timer(const Duration(milliseconds: 200), () {
+        if (!mounted) return;
+        _refresh();
+      });
       return;
     }
 
@@ -321,6 +469,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         .cast<int?>()
         .firstOrNull;
     final yourSeatNo = yourSeatNoFromSeats ?? yourSeatNoFromMembers;
+    final isSeated = yourSeatNo != null;
     // 动作栏显示以服务端 ACTION_REQUESTED 为准：
     // 有时快照里的 actingSeat 更新会有一点延迟，直接依赖它会导致按钮不出现。
     final showActions =
@@ -335,29 +484,82 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
     final canAct = !_loading && _wsConnected;
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Text(
+                  '牌桌 ${widget.tableId}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.home_outlined),
+                title: const Text('返回大厅'),
+                onTap: _loading
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                        _leaveTable();
+                      },
+              ),
+              ListTile(
+                leading: Icon(isSeated ? Icons.logout : Icons.event_seat),
+                title: Text(isSeated ? '站起' : '坐下'),
+                onTap: _loading
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                        if (isSeated) {
+                          _standUp();
+                          return;
+                        }
+                        final buyin =
+                            snapshot?.members
+                                .where(
+                                  (m) =>
+                                      youUserId != null &&
+                                      m.userId == youUserId,
+                                )
+                                .map((m) => m.buyin)
+                                .cast<int?>()
+                                .firstOrNull ??
+                            0;
+                        if (buyin <= 0) {
+                          showToast('请先买入');
+                          return;
+                        }
+                        _showSeat();
+                      },
+              ),
+              ListTile(
+                leading: const Icon(Icons.swap_horiz),
+                title: const Text('换桌'),
+                onTap: _loading
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                        _changeTable();
+                      },
+              ),
+              const Spacer(),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        ),
         title: Text('牌桌 ${widget.tableId}'),
         backgroundColor: const Color(0xFF0F2942),
-        actions: [
-          if (_wsConnected)
-            const Padding(
-              padding: EdgeInsets.only(right: 4),
-              child: Icon(Icons.wifi, size: 18),
-            )
-          else
-            const Padding(
-              padding: EdgeInsets.only(right: 4),
-              child: Icon(Icons.wifi_off, size: 18),
-            ),
-          IconButton(
-            onPressed: _loading ? null : _refresh,
-            icon: const Icon(Icons.refresh),
-          ),
-          IconButton(
-            onPressed: _loading ? null : _leaveTable,
-            icon: const Icon(Icons.exit_to_app),
-          ),
-        ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -731,6 +933,7 @@ class _TableCanvas extends StatelessWidget {
     final pot = hand?.pot ?? 0;
     final community = hand?.board ?? const <String>[];
     final actingSeat = hand?.actingSeat;
+    final street = hand?.street;
 
     return Center(
       child: Container(
@@ -771,8 +974,16 @@ class _TableCanvas extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            if (community.isEmpty)
-              const Text('等待翻牌... ', style: TextStyle(color: Colors.white70))
+            if (hand == null)
+              const Text(
+                '等待开局（至少需要 2 名玩家坐下）',
+                style: TextStyle(color: Colors.white70),
+              )
+            else if (community.isEmpty)
+              Text(
+                street == 'PREFLOP' ? '等待翻牌（请完成下注）' : '等待发牌...',
+                style: const TextStyle(color: Colors.white70),
+              )
             else
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
