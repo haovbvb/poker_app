@@ -39,11 +39,6 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   Timer? _refreshDebounce;
   Timer? _reconnectTimer;
 
-  Timer? _manualAutoFoldTimer;
-  int? _manualAutoFoldActionToken;
-
-  int? _lastAutoActionToken;
-
   bool _autoSeatInProgress = false;
   int _autoSeatLastAttemptMs = 0;
 
@@ -67,6 +62,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   }
 
   Future<void> _changeTable() async {
+    final l10n = context.l10n;
     const fallbackMaxChips = 1000000;
     final snap = _snapshot;
 
@@ -116,7 +112,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         showToast(
           resp.message.isNotEmpty
               ? resp.message
-              : context.l10n.pokerChangeTableNoNewTable,
+              : l10n.pokerChangeTableNoNewTable,
         );
         return;
       }
@@ -141,44 +137,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   void dispose() {
     _reconnectTimer?.cancel();
     _refreshDebounce?.cancel();
-    _manualAutoFoldTimer?.cancel();
     _wsSub?.cancel();
     _ws?.dispose();
     super.dispose();
-  }
-
-  void _cancelManualAutoFoldTimer() {
-    _manualAutoFoldTimer?.cancel();
-    _manualAutoFoldTimer = null;
-    _manualAutoFoldActionToken = null;
-  }
-
-  void _scheduleManualAutoFoldIfNeeded(PokerActionRequest req) {
-    // 仅在“非自动托管模式”下生效：真人取消托管后，超时 15 秒自动弃牌。
-    if (widget.autoPlay) return;
-
-    final youUserId = _snapshot?.youUserId;
-    if (youUserId == null || req.userId != youUserId) return;
-
-    if (_manualAutoFoldActionToken == req.actionToken &&
-        _manualAutoFoldTimer != null) {
-      return;
-    }
-
-    _manualAutoFoldTimer?.cancel();
-    _manualAutoFoldActionToken = req.actionToken;
-
-    _manualAutoFoldTimer = Timer(const Duration(seconds: 15), () {
-      if (!mounted) return;
-      if (_actionRequest?.actionToken != req.actionToken) return;
-
-      final ws = _ws;
-      if (!_wsConnected || ws == null) return;
-
-      // 自动弃牌：尽量静默执行，避免额外弹 Toast。
-      setState(() => _actionRequest = null);
-      ws.sendAction(actionToken: req.actionToken, action: 'fold');
-    });
   }
 
   Future<void> _joinAndLoad() async {
@@ -320,7 +281,6 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
     if (type == 'CLOSED') {
       if (!mounted) return;
       setState(() => _wsConnected = false);
-      _cancelManualAutoFoldTimer();
       _scheduleReconnect();
       return;
     }
@@ -369,25 +329,6 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         if (!mounted) return;
 
         setState(() => _actionRequest = req);
-
-        // 非自动托管模式：轮到自己行动后 15 秒超时自动弃牌。
-        _scheduleManualAutoFoldIfNeeded(req);
-
-        // 自动托管：收到轮到自己行动时，自动 check/call。
-        if (widget.autoPlay) {
-          final youUserId = _snapshot?.youUserId;
-          if (youUserId != null && req.userId == youUserId) {
-            if (_lastAutoActionToken != req.actionToken) {
-              _lastAutoActionToken = req.actionToken;
-              // 轻微延迟，避免与 UI setState/WS 状态竞争。
-              Timer(const Duration(milliseconds: 120), () {
-                if (!mounted) return;
-                if (_actionRequest?.actionToken != req.actionToken) return;
-                _sendAction(req.toCall > 0 ? 'call' : 'check');
-              });
-            }
-          }
-        }
       }
       return;
     }
@@ -465,6 +406,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   }
 
   Future<PokerTableSnapshot> _fetchSnapshot() async {
+    final l10n = context.l10n;
     final resp = await _api.get<PokerTableSnapshot>(
       ApiPath.v1PokerTableSnapshot(widget.tableId),
       parser: (json) =>
@@ -472,13 +414,14 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
     );
     if (!resp.isSuccess || resp.result == null) {
       throw Exception(
-        resp.message.isNotEmpty ? resp.message : context.l10n.pokerFetchTableFailed,
+        resp.message.isNotEmpty ? resp.message : l10n.pokerFetchTableFailed,
       );
     }
     return resp.result!;
   }
 
   Future<void> _leaveTable() async {
+    final l10n = context.l10n;
     setState(() => _loading = true);
     try {
       await _wsSub?.cancel();
@@ -491,7 +434,8 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         parser: (_) {},
         toastOnBusinessError: true,
       );
-      showToast(context.l10n.pokerLeftTable);
+      if (!mounted) return;
+      showToast(l10n.pokerLeftTable);
       if (!mounted) return;
       AppRouter.goHome();
     } catch (e) {
@@ -652,10 +596,8 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                   : _error != null
                   ? _ErrorView(message: _error!, onRetry: _joinAndLoad)
                   : snapshot == null
-                    ? Center(child: Text(context.l10n.pokerNoData))
-                  : _TableContent(
-                      snapshot: snapshot,
-                    ),
+                  ? Center(child: Text(context.l10n.pokerNoData))
+                  : _TableContent(snapshot: snapshot),
             ),
             if (showActions)
               _ActionBar(
@@ -673,6 +615,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   }
 
   Future<void> _showBuyIn() async {
+    final l10n = context.l10n;
     final snapshot = _snapshot;
     if (snapshot == null) return;
 
@@ -704,7 +647,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                 controller: controller,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: context.l10n.pokerBuyInAmountHint,
+                  hintText: l10n.pokerBuyInAmountHint,
                 ),
               ),
               const SizedBox(height: 12),
@@ -713,7 +656,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                   final v = int.tryParse(controller.text.trim());
                   Navigator.of(ctx).pop(v);
                 },
-                child: Text(context.l10n.pokerConfirmBuyIn),
+                child: Text(l10n.pokerConfirmBuyIn),
               ),
             ],
           ),
@@ -730,7 +673,8 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         parser: (_) {},
         toastOnBusinessError: true,
       );
-      showToast(context.l10n.pokerBuyInSuccess);
+      if (!mounted) return;
+      showToast(l10n.pokerBuyInSuccess);
       await _refresh();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -740,6 +684,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   }
 
   Future<void> _showSeat() async {
+    final l10n = context.l10n;
     final snapshot = _snapshot;
     if (snapshot == null) return;
     final max = snapshot.table.maxPlayers ?? 9;
@@ -747,7 +692,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: Text(context.l10n.pokerSelectSeat),
+          title: Text(l10n.pokerSelectSeat),
           content: SizedBox(
             width: double.maxFinite,
             child: Wrap(
@@ -766,7 +711,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: Text(context.l10n.commonCancel),
+              child: Text(l10n.commonCancel),
             ),
           ],
         );
@@ -782,7 +727,8 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         parser: (_) {},
         toastOnBusinessError: true,
       );
-      showToast(context.l10n.pokerSitDownSuccess);
+      if (!mounted) return;
+      showToast(l10n.pokerSitDownSuccess);
       await _refresh();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -800,8 +746,6 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
       return;
     }
 
-    _cancelManualAutoFoldTimer();
-
     // 先隐藏动作栏，避免重复点击（后续会收到快照/事件刷新）。
     if (mounted) {
       setState(() => _actionRequest = null);
@@ -811,10 +755,11 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   }
 
   Future<void> _showRaise() async {
+    final l10n = context.l10n;
     final req = _actionRequest;
     if (req == null) return;
     if (!_wsConnected || _ws == null) {
-      showToast(context.l10n.pokerNetworkNotConnected);
+      showToast(l10n.pokerNetworkNotConnected);
       return;
     }
     final controller = TextEditingController(text: req.minRaiseTo.toString());
@@ -840,9 +785,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
               TextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: context.l10n.pokerRaiseToHint,
-                ),
+                decoration: InputDecoration(hintText: l10n.pokerRaiseToHint),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -850,7 +793,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                   final v = int.tryParse(controller.text.trim());
                   Navigator.of(ctx).pop(v);
                 },
-                child: Text(context.l10n.pokerConfirmRaise),
+                child: Text(l10n.pokerConfirmRaise),
               ),
             ],
           ),
@@ -860,7 +803,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
 
     if (amount == null) return;
     if (amount < req.minRaiseTo) {
-      showToast(context.l10n.pokerRaiseAmountTooSmall);
+      showToast(l10n.pokerRaiseAmountTooSmall);
       return;
     }
     _sendAction('raise_to', amount: amount);
@@ -868,9 +811,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
 }
 
 class _TableContent extends StatelessWidget {
-  const _TableContent({
-    required this.snapshot,
-  });
+  const _TableContent({required this.snapshot});
 
   final PokerTableSnapshot snapshot;
 
@@ -1073,7 +1014,9 @@ class _SeatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = seat.status.isEmpty ? context.l10n.pokerWaiting : seat.status;
+    final subtitle = seat.status.isEmpty
+        ? context.l10n.pokerWaiting
+        : seat.status;
 
     return Container(
       width: 160,

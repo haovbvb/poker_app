@@ -22,11 +22,8 @@ from services.subscription_tier import (
     require_user_min_tier,
     require_within_wallet_cap,
 )
-<<<<<<< HEAD
 from repositories.wallet import user_wallet_repository
-=======
 from settings.config import settings
->>>>>>> d44b154f96300fad73ffe6646f7de918e6042bb3
 
 router = APIRouter()
 

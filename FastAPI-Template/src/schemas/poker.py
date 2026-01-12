@@ -13,7 +13,7 @@ class PokerTableConfig(BaseModel):
     max_buyin: int = Field(default=200, ge=1, description="Maximum buy-in")
 
     action_timeout_sec: int = Field(
-        default=20, ge=5, le=120, description="Action timeout"
+        default=15, ge=5, le=120, description="Action timeout"
     )
     timebank_sec: int = Field(default=60, ge=0, le=600, description="Time bank")
 

@@ -47,7 +47,7 @@ class TableConfig:
     straddle: bool = False
     min_buyin: int = 40
     max_buyin: int = 200
-    action_timeout_sec: int = 20
+    action_timeout_sec: int = 15
     timebank_sec: int = 60
 
 
@@ -1209,9 +1209,9 @@ class PokerTable:
                     and int(min_raise_to) > 0
                 )
 
-                raise_prob = float(getattr(settings, "POKER_BOTS_RAISE_PROB", 0.10) or 0.10)
+                raise_prob = float(getattr(settings, "POKER_BOTS_RAISE_PROB", 0.0) or 0.0)
                 fold_prob = float(
-                    getattr(settings, "POKER_BOTS_FOLD_PROB_FACING_BET", 0.20) or 0.20
+                    getattr(settings, "POKER_BOTS_FOLD_PROB_FACING_BET", 0.0) or 0.0
                 )
 
                 rng = random.Random(f"{hand.hand_id}:{user_id}:{hand.action_token}")
@@ -1661,7 +1661,7 @@ class PokerTable:
             ps = hand.players.get(seat_no)
             if ps is None or ps.folded or ps.all_in:
                 return False
-            to_call = max(0, hand.current_bet - ps.committed)
+            to_call = max(0, hand.current_bet - ps.committed_round)
             auto_action = "check" if to_call == 0 else "fold"
             acting_user_id = self.state.seats[seat_no].user_id
 
@@ -1784,8 +1784,7 @@ class PokerManager:
                         straddle=bool(cfg.get("straddle") or False),
                         min_buyin=int(cfg.get("min_buyin") or 40),
                         max_buyin=int(cfg.get("max_buyin") or 200),
-                        action_timeout_sec=int(cfg.get("action_timeout_sec") or 20),
-                        timebank_sec=int(cfg.get("timebank_sec") or 60),
+                        action_timeout_sec=int(cfg.get("action_timeout_sec") or 15),
                     )
                 except Exception:
                     continue
