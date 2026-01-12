@@ -61,5 +61,152 @@
   "profileAbout": "About",
   "@profileAbout": {
     "description": "Menu label for viewing information about the application."
-  }
+  },
+
+  "commonCancel": "Cancel",
+  "@commonCancel": {"description": "Common: cancel"},
+  "commonRetry": "Retry",
+  "@commonRetry": {"description": "Common: retry"},
+
+  "pokerTableTitle": "Table {tableId}",
+  "@pokerTableTitle": {
+    "description": "Poker table page title",
+    "placeholders": {"tableId": {"type": "String"}}
+  },
+  "pokerBackToLobby": "Back to Lobby",
+  "@pokerBackToLobby": {"description": "Drawer item: back to lobby"},
+  "pokerStandUp": "Stand Up",
+  "@pokerStandUp": {"description": "Drawer item: stand up"},
+  "pokerSitDown": "Sit Down",
+  "@pokerSitDown": {"description": "Drawer item: sit down"},
+  "pokerChangeTable": "Change Table",
+  "@pokerChangeTable": {"description": "Drawer item: change table"},
+
+  "pokerNoData": "No data",
+  "@pokerNoData": {"description": "Poker table page empty state"},
+
+  "pokerStandUpDone": "Stood up",
+  "@pokerStandUpDone": {"description": "Toast: stand up success"},
+  "pokerPleaseBuyInFirst": "Please buy in first",
+  "@pokerPleaseBuyInFirst": {"description": "Toast: buy-in required"},
+  "pokerChangeTableNoNewTable": "Failed to get a new table",
+  "@pokerChangeTableNoNewTable": {"description": "Change table: no new table returned"},
+  "pokerAutoSeated": "Auto seated (Seat {seatNo})",
+  "@pokerAutoSeated": {
+    "description": "Toast: auto seat success",
+    "placeholders": {"seatNo": {"type": "int"}}
+  },
+  "pokerFetchTableFailed": "Failed to fetch table",
+  "@pokerFetchTableFailed": {"description": "Default error when fetching table snapshot"},
+  "pokerLeftTable": "Left the table",
+  "@pokerLeftTable": {"description": "Toast: left table"},
+
+  "pokerBuyIn": "Buy In",
+  "@pokerBuyIn": {"description": "Button: buy in"},
+  "pokerRefreshTable": "Refresh",
+  "@pokerRefreshTable": {"description": "Button: refresh table"},
+  "pokerLeaveTable": "Leave",
+  "@pokerLeaveTable": {"description": "Button: leave table"},
+
+  "pokerBuyInChipsRange": "Buy-in chips ({minBuyin}~{maxBuyin})",
+  "@pokerBuyInChipsRange": {
+    "description": "Buy-in sheet title",
+    "placeholders": {
+      "minBuyin": {"type": "int"},
+      "maxBuyin": {"type": "int"}
+    }
+  },
+  "pokerBuyInAmountHint": "Enter buy-in amount",
+  "@pokerBuyInAmountHint": {"description": "Buy-in amount input hint"},
+  "pokerConfirmBuyIn": "Confirm Buy-in",
+  "@pokerConfirmBuyIn": {"description": "Confirm buy-in button"},
+  "pokerBuyInSuccess": "Buy-in successful",
+  "@pokerBuyInSuccess": {"description": "Toast: buy-in success"},
+
+  "pokerSelectSeat": "Select seat",
+  "@pokerSelectSeat": {"description": "Seat selection dialog title"},
+  "pokerSitDownSuccess": "Seated",
+  "@pokerSitDownSuccess": {"description": "Toast: sit down success"},
+
+  "pokerNetworkNotConnected": "Not connected. Unable to act.",
+  "@pokerNetworkNotConnected": {"description": "Toast when websocket is not connected"},
+
+  "pokerRaiseToMin": "Raise to (min {minRaiseTo})",
+  "@pokerRaiseToMin": {
+    "description": "Raise sheet title",
+    "placeholders": {"minRaiseTo": {"type": "int"}}
+  },
+  "pokerRaiseToHint": "Enter raise_to amount",
+  "@pokerRaiseToHint": {"description": "Raise amount input hint"},
+  "pokerConfirmRaise": "Confirm Raise",
+  "@pokerConfirmRaise": {"description": "Confirm raise button"},
+  "pokerRaiseAmountTooSmall": "Raise amount must be at least the minimum",
+  "@pokerRaiseAmountTooSmall": {"description": "Toast when raise is below minimum"},
+
+  "pokerBlind": "Blinds {sb}/{bb}",
+  "@pokerBlind": {
+    "description": "Blinds label",
+    "placeholders": {"sb": {"type": "int"}, "bb": {"type": "int"}}
+  },
+  "pokerMinBuyIn": "Min buy-in {minBuyin}",
+  "@pokerMinBuyIn": {
+    "description": "Min buy-in label",
+    "placeholders": {"minBuyin": {"type": "int"}}
+  },
+  "pokerMaxBuyIn": "Max buy-in {maxBuyin}",
+  "@pokerMaxBuyIn": {
+    "description": "Max buy-in label",
+    "placeholders": {"maxBuyin": {"type": "int"}}
+  },
+  "pokerCurrentStreet": "Street {street}",
+  "@pokerCurrentStreet": {
+    "description": "Current street label",
+    "placeholders": {"street": {"type": "String"}}
+  },
+  "pokerYourHoleCards": "Your cards",
+  "@pokerYourHoleCards": {"description": "Your hole cards label"},
+
+  "pokerPot": "Pot: {pot}",
+  "@pokerPot": {
+    "description": "Pot display",
+    "placeholders": {"pot": {"type": "int"}}
+  },
+  "pokerWaitingForStart": "Waiting to start (at least 2 players seated)",
+  "@pokerWaitingForStart": {"description": "Waiting for game start"},
+  "pokerWaitingForFlop": "Waiting for flop (finish betting)",
+  "@pokerWaitingForFlop": {"description": "Waiting for flop"},
+  "pokerWaitingForDeal": "Waiting for dealing...",
+  "@pokerWaitingForDeal": {"description": "Waiting for dealing"},
+  "pokerActingSeat": "Acting: Seat {seatNo}",
+  "@pokerActingSeat": {
+    "description": "Acting seat display",
+    "placeholders": {"seatNo": {"type": "int"}}
+  },
+
+  "pokerWaiting": "Waiting",
+  "@pokerWaiting": {"description": "Seat status: waiting"},
+  "pokerSeatNo": "Seat {seatNo}",
+  "@pokerSeatNo": {
+    "description": "Seat number display",
+    "placeholders": {"seatNo": {"type": "int"}}
+  },
+  "pokerEmptySeat": "Empty",
+  "@pokerEmptySeat": {"description": "Empty seat label"},
+  "pokerChipCount": "{stack} chips",
+  "@pokerChipCount": {
+    "description": "Chip count display",
+    "placeholders": {"stack": {"type": "int"}}
+  },
+
+  "pokerCallAmount": "Call {toCall}",
+  "@pokerCallAmount": {
+    "description": "Call button label",
+    "placeholders": {"toCall": {"type": "int"}}
+  },
+  "pokerCheck": "Check",
+  "@pokerCheck": {"description": "Check button label"},
+  "pokerFold": "Fold",
+  "@pokerFold": {"description": "Fold button label"},
+  "pokerRaise": "Raise",
+  "@pokerRaise": {"description": "Raise button label"}
 }

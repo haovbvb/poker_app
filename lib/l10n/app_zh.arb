@@ -61,5 +61,152 @@
   "profileAbout": "关于",
   "@profileAbout": {
     "description": "个人中心中查看应用信息的菜单项"
-  }
+  },
+
+  "commonCancel": "取消",
+  "@commonCancel": {"description": "通用：取消"},
+  "commonRetry": "重试",
+  "@commonRetry": {"description": "通用：重试"},
+
+  "pokerTableTitle": "牌桌 {tableId}",
+  "@pokerTableTitle": {
+    "description": "牌桌页面标题",
+    "placeholders": {"tableId": {"type": "String"}}
+  },
+  "pokerBackToLobby": "返回大厅",
+  "@pokerBackToLobby": {"description": "抽屉菜单：返回大厅"},
+  "pokerStandUp": "站起",
+  "@pokerStandUp": {"description": "抽屉菜单：站起"},
+  "pokerSitDown": "坐下",
+  "@pokerSitDown": {"description": "抽屉菜单：坐下"},
+  "pokerChangeTable": "换桌",
+  "@pokerChangeTable": {"description": "抽屉菜单：换桌"},
+
+  "pokerNoData": "暂无数据",
+  "@pokerNoData": {"description": "牌桌页面无数据占位"},
+
+  "pokerStandUpDone": "已站起",
+  "@pokerStandUpDone": {"description": "站起成功提示"},
+  "pokerPleaseBuyInFirst": "请先买入",
+  "@pokerPleaseBuyInFirst": {"description": "未买入时提示"},
+  "pokerChangeTableNoNewTable": "未获取到新牌桌",
+  "@pokerChangeTableNoNewTable": {"description": "换桌时未返回新桌"},
+  "pokerAutoSeated": "已自动坐下（座位 {seatNo}）",
+  "@pokerAutoSeated": {
+    "description": "自动坐下成功提示",
+    "placeholders": {"seatNo": {"type": "int"}}
+  },
+  "pokerFetchTableFailed": "获取牌桌失败",
+  "@pokerFetchTableFailed": {"description": "拉取牌桌快照失败的默认错误"},
+  "pokerLeftTable": "已离开牌桌",
+  "@pokerLeftTable": {"description": "离桌成功提示"},
+
+  "pokerBuyIn": "买入",
+  "@pokerBuyIn": {"description": "按钮：买入"},
+  "pokerRefreshTable": "刷新牌桌",
+  "@pokerRefreshTable": {"description": "按钮：刷新牌桌"},
+  "pokerLeaveTable": "离开牌桌",
+  "@pokerLeaveTable": {"description": "按钮：离开牌桌"},
+
+  "pokerBuyInChipsRange": "买入筹码（{minBuyin}~{maxBuyin}）",
+  "@pokerBuyInChipsRange": {
+    "description": "买入弹窗标题",
+    "placeholders": {
+      "minBuyin": {"type": "int"},
+      "maxBuyin": {"type": "int"}
+    }
+  },
+  "pokerBuyInAmountHint": "输入买入金额",
+  "@pokerBuyInAmountHint": {"description": "买入金额输入提示"},
+  "pokerConfirmBuyIn": "确认买入",
+  "@pokerConfirmBuyIn": {"description": "确认买入按钮"},
+  "pokerBuyInSuccess": "买入成功",
+  "@pokerBuyInSuccess": {"description": "买入成功提示"},
+
+  "pokerSelectSeat": "选择座位",
+  "@pokerSelectSeat": {"description": "选座对话框标题"},
+  "pokerSitDownSuccess": "坐下成功",
+  "@pokerSitDownSuccess": {"description": "坐下成功提示"},
+
+  "pokerNetworkNotConnected": "网络未连接，无法操作",
+  "@pokerNetworkNotConnected": {"description": "网络未连接时的操作提示"},
+
+  "pokerRaiseToMin": "加注到（最小 {minRaiseTo}）",
+  "@pokerRaiseToMin": {
+    "description": "加注弹窗标题",
+    "placeholders": {"minRaiseTo": {"type": "int"}}
+  },
+  "pokerRaiseToHint": "输入 raise_to 金额",
+  "@pokerRaiseToHint": {"description": "加注金额输入提示"},
+  "pokerConfirmRaise": "确认加注",
+  "@pokerConfirmRaise": {"description": "确认加注按钮"},
+  "pokerRaiseAmountTooSmall": "加注金额不能小于最小加注",
+  "@pokerRaiseAmountTooSmall": {"description": "加注金额过小时提示"},
+
+  "pokerBlind": "盲注 {sb}/{bb}",
+  "@pokerBlind": {
+    "description": "盲注信息",
+    "placeholders": {"sb": {"type": "int"}, "bb": {"type": "int"}}
+  },
+  "pokerMinBuyIn": "最低买入 {minBuyin}",
+  "@pokerMinBuyIn": {
+    "description": "最低买入信息",
+    "placeholders": {"minBuyin": {"type": "int"}}
+  },
+  "pokerMaxBuyIn": "最高买入 {maxBuyin}",
+  "@pokerMaxBuyIn": {
+    "description": "最高买入信息",
+    "placeholders": {"maxBuyin": {"type": "int"}}
+  },
+  "pokerCurrentStreet": "当前阶段 {street}",
+  "@pokerCurrentStreet": {
+    "description": "当前牌局阶段信息",
+    "placeholders": {"street": {"type": "String"}}
+  },
+  "pokerYourHoleCards": "你的手牌",
+  "@pokerYourHoleCards": {"description": "你的手牌标签"},
+
+  "pokerPot": "底池: {pot}",
+  "@pokerPot": {
+    "description": "底池显示",
+    "placeholders": {"pot": {"type": "int"}}
+  },
+  "pokerWaitingForStart": "等待开局（至少需要 2 名玩家坐下）",
+  "@pokerWaitingForStart": {"description": "等待开局提示"},
+  "pokerWaitingForFlop": "等待翻牌（请完成下注）",
+  "@pokerWaitingForFlop": {"description": "翻牌前等待提示"},
+  "pokerWaitingForDeal": "等待发牌...",
+  "@pokerWaitingForDeal": {"description": "等待发牌提示"},
+  "pokerActingSeat": "行动位: 座位 {seatNo}",
+  "@pokerActingSeat": {
+    "description": "行动位显示",
+    "placeholders": {"seatNo": {"type": "int"}}
+  },
+
+  "pokerWaiting": "等待",
+  "@pokerWaiting": {"description": "座位状态：等待"},
+  "pokerSeatNo": "座位 {seatNo}",
+  "@pokerSeatNo": {
+    "description": "座位号显示",
+    "placeholders": {"seatNo": {"type": "int"}}
+  },
+  "pokerEmptySeat": "空位",
+  "@pokerEmptySeat": {"description": "空位显示"},
+  "pokerChipCount": "{stack} 筹码",
+  "@pokerChipCount": {
+    "description": "筹码数量显示",
+    "placeholders": {"stack": {"type": "int"}}
+  },
+
+  "pokerCallAmount": "跟注 {toCall}",
+  "@pokerCallAmount": {
+    "description": "跟注按钮文案",
+    "placeholders": {"toCall": {"type": "int"}}
+  },
+  "pokerCheck": "过牌",
+  "@pokerCheck": {"description": "过牌按钮文案"},
+  "pokerFold": "弃牌",
+  "@pokerFold": {"description": "弃牌按钮文案"},
+  "pokerRaise": "加注",
+  "@pokerRaise": {"description": "加注按钮文案"}
 }

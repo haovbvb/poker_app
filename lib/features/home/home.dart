@@ -3,14 +3,85 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poker_app/app/app_router.dart';
 import 'package:poker_app/core/utils/toast.dart';
 import 'package:poker_app/features/home/settings_dialog.dart';
+import 'package:poker_app/network/api_client.dart';
 import 'package:poker_app/network/api_path.dart';
 import 'package:poker_app/network/api_service.dart';
+
+final _currentUserInfoProvider = FutureProvider<CurrentUserInfo>((ref) async {
+  final api = ApiService();
+  final resp = await api.get<Map<String, dynamic>>(
+    ApiPath.user,
+    showHud: false,
+    notifyOnError: false,
+    toastOnBusinessError: false,
+    parser: (json) => Map<String, dynamic>.from(json as Map),
+  );
+
+  if (!resp.isSuccess || resp.result == null) {
+    throw Exception(resp.message.isNotEmpty ? resp.message : 'Failed to fetch user info');
+  }
+
+  return CurrentUserInfo.fromJson(resp.result!);
+});
+
+class CurrentUserInfo {
+  const CurrentUserInfo({
+    required this.id,
+    required this.username,
+    required this.alias,
+    required this.tier,
+    required this.avatar,
+    required this.walletChips,
+  });
+
+  final int id;
+  final String username;
+  final String? alias;
+  final String? tier;
+  final String? avatar;
+  final int walletChips;
+
+  factory CurrentUserInfo.fromJson(Map<String, dynamic> json) {
+    return CurrentUserInfo(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      username: (json['username'] ?? '').toString(),
+      alias: (json['alias'] as String?),
+      tier: (json['tier'] as String?),
+      avatar: (json['avatar'] as String?),
+      walletChips: (json['wallet_chips'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
 
 class HomeTab extends ConsumerWidget {
   const HomeTab({super.key});
 
+  String? _resolveAvatarUrl(String? avatar) {
+    final raw = (avatar ?? '').trim();
+    if (raw.isEmpty) return null;
+    if (raw.startsWith('http://') || raw.startsWith('https://')) {
+      return raw;
+    }
+    final base = ApiClient().baseUrl;
+    return Uri.parse(base).resolve(raw).toString();
+  }
+
+  String _formatChips(int chips) {
+    if (chips >= 1000000000) {
+      return '${(chips / 1000000000).toStringAsFixed(2)}B';
+    }
+    if (chips >= 1000000) {
+      return '${(chips / 1000000).toStringAsFixed(2)}M';
+    }
+    if (chips >= 1000) {
+      return '${(chips / 1000).toStringAsFixed(2)}K';
+    }
+    return chips.toString();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userInfoAsync = ref.watch(_currentUserInfoProvider);
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -32,27 +103,125 @@ class HomeTab extends ConsumerWidget {
                 child: Row(
                   children: [
                     // 用户头像
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE67E22),
-                        borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: Colors.white, width: 2),
+                    userInfoAsync.when(
+                      data: (u) {
+                        final url = _resolveAvatarUrl(u.avatar);
+                        return Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE67E22),
+                            borderRadius: BorderRadius.circular(28),
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: ClipOval(
+                            child: url == null
+                                ? const Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                    size: 32,
+                                  )
+                                : Image.network(
+                                    url,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) {
+                                      return const Icon(
+                                        Icons.person,
+                                        color: Colors.white,
+                                        size: 32,
+                                      );
+                                    },
+                                  ),
+                          ),
+                        );
+                      },
+                      loading: () => Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE67E22),
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 32,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.person,
-                        color: Colors.white,
-                        size: 32,
+                      error: (_, __) => Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE67E22),
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 32,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Text(
-                      'Page',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
+                    userInfoAsync.when(
+                      data: (u) {
+                        final displayName =
+                            (u.alias ?? '').trim().isNotEmpty ? u.alias!.trim() : u.username;
+                        final tier = (u.tier ?? '').trim();
+                        return Row(
+                          children: [
+                            Text(
+                              displayName.isNotEmpty ? displayName : '—',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            if (tier.isNotEmpty) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.25),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.4),
+                                  ),
+                                ),
+                                child: Text(
+                                  tier.toUpperCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        );
+                      },
+                      loading: () => const Text(
+                        '—',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      error: (_, __) => const Text(
+                        '—',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const Spacer(),
@@ -66,18 +235,22 @@ class HomeTab extends ConsumerWidget {
                         color: Colors.black.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Text(
-                            '123.23M',
-                            style: TextStyle(
+                            userInfoAsync.when(
+                              data: (u) => _formatChips(u.walletChips),
+                              loading: () => '—',
+                              error: (_, __) => '—',
+                            ),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(width: 12),
-                          Icon(
+                          const SizedBox(width: 12),
+                          const Icon(
                             Icons.add_circle_outline,
                             color: Colors.white,
                             size: 24,

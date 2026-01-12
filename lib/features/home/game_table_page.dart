@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poker_app/app/app_router.dart';
+import 'package:poker_app/core/utils/context_extensions.dart';
 import 'package:poker_app/core/utils/toast.dart';
 import 'package:poker_app/features/home/poker_ws_client.dart';
 import 'package:poker_app/network/api_path.dart';
@@ -38,6 +39,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   Timer? _refreshDebounce;
   Timer? _reconnectTimer;
 
+  Timer? _manualAutoFoldTimer;
+  int? _manualAutoFoldActionToken;
+
   int? _lastAutoActionToken;
 
   bool _autoSeatInProgress = false;
@@ -51,7 +55,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         parser: (_) {},
         toastOnBusinessError: true,
       );
-      showToast('已站起');
+      if (mounted) {
+        showToast(context.l10n.pokerStandUpDone);
+      }
       await _refresh();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -107,7 +113,11 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
 
       final tableId = resp.result?['table_id'] as String?;
       if (!resp.isSuccess || tableId == null || tableId.isEmpty) {
-        showToast(resp.message.isNotEmpty ? resp.message : '未获取到新牌桌');
+        showToast(
+          resp.message.isNotEmpty
+              ? resp.message
+              : context.l10n.pokerChangeTableNoNewTable,
+        );
         return;
       }
 
@@ -131,9 +141,44 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   void dispose() {
     _reconnectTimer?.cancel();
     _refreshDebounce?.cancel();
+    _manualAutoFoldTimer?.cancel();
     _wsSub?.cancel();
     _ws?.dispose();
     super.dispose();
+  }
+
+  void _cancelManualAutoFoldTimer() {
+    _manualAutoFoldTimer?.cancel();
+    _manualAutoFoldTimer = null;
+    _manualAutoFoldActionToken = null;
+  }
+
+  void _scheduleManualAutoFoldIfNeeded(PokerActionRequest req) {
+    // 仅在“非自动托管模式”下生效：真人取消托管后，超时 15 秒自动弃牌。
+    if (widget.autoPlay) return;
+
+    final youUserId = _snapshot?.youUserId;
+    if (youUserId == null || req.userId != youUserId) return;
+
+    if (_manualAutoFoldActionToken == req.actionToken &&
+        _manualAutoFoldTimer != null) {
+      return;
+    }
+
+    _manualAutoFoldTimer?.cancel();
+    _manualAutoFoldActionToken = req.actionToken;
+
+    _manualAutoFoldTimer = Timer(const Duration(seconds: 15), () {
+      if (!mounted) return;
+      if (_actionRequest?.actionToken != req.actionToken) return;
+
+      final ws = _ws;
+      if (!_wsConnected || ws == null) return;
+
+      // 自动弃牌：尽量静默执行，避免额外弹 Toast。
+      setState(() => _actionRequest = null);
+      ws.sendAction(actionToken: req.actionToken, action: 'fold');
+    });
   }
 
   Future<void> _joinAndLoad() async {
@@ -217,7 +262,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
             _snapshot = next;
             _lastSeq = next.table.seq ?? _lastSeq;
           });
-          showToast('已自动坐下（座位 $seatNo）');
+          showToast(context.l10n.pokerAutoSeated(seatNo));
           return;
         } catch (_) {
           // try next seat
@@ -275,6 +320,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
     if (type == 'CLOSED') {
       if (!mounted) return;
       setState(() => _wsConnected = false);
+      _cancelManualAutoFoldTimer();
       _scheduleReconnect();
       return;
     }
@@ -323,6 +369,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         if (!mounted) return;
 
         setState(() => _actionRequest = req);
+
+        // 非自动托管模式：轮到自己行动后 15 秒超时自动弃牌。
+        _scheduleManualAutoFoldIfNeeded(req);
 
         // 自动托管：收到轮到自己行动时，自动 check/call。
         if (widget.autoPlay) {
@@ -422,7 +471,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
           PokerTableSnapshot.fromJson(Map<String, dynamic>.from(json as Map)),
     );
     if (!resp.isSuccess || resp.result == null) {
-      throw Exception(resp.message.isNotEmpty ? resp.message : '获取牌桌失败');
+      throw Exception(
+        resp.message.isNotEmpty ? resp.message : context.l10n.pokerFetchTableFailed,
+      );
     }
     return resp.result!;
   }
@@ -440,7 +491,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         parser: (_) {},
         toastOnBusinessError: true,
       );
-      showToast('已离开牌桌');
+      showToast(context.l10n.pokerLeftTable);
       if (!mounted) return;
       AppRouter.goHome();
     } catch (e) {
@@ -493,14 +544,14 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: Text(
-                  '牌桌 ${widget.tableId}',
+                  context.l10n.pokerTableTitle(widget.tableId),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.home_outlined),
-                title: const Text('返回大厅'),
+                title: Text(context.l10n.pokerBackToLobby),
                 onTap: _loading
                     ? null
                     : () {
@@ -510,7 +561,11 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
               ),
               ListTile(
                 leading: Icon(isSeated ? Icons.logout : Icons.event_seat),
-                title: Text(isSeated ? '站起' : '坐下'),
+                title: Text(
+                  isSeated
+                      ? context.l10n.pokerStandUp
+                      : context.l10n.pokerSitDown,
+                ),
                 onTap: _loading
                     ? null
                     : () {
@@ -531,15 +586,35 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                                 .firstOrNull ??
                             0;
                         if (buyin <= 0) {
-                          showToast('请先买入');
+                          showToast(context.l10n.pokerPleaseBuyInFirst);
                           return;
                         }
                         _showSeat();
                       },
               ),
               ListTile(
+                leading: const Icon(Icons.attach_money),
+                title: Text(context.l10n.pokerBuyIn),
+                onTap: _loading
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                        _showBuyIn();
+                      },
+              ),
+              ListTile(
+                leading: const Icon(Icons.refresh),
+                title: Text(context.l10n.pokerRefreshTable),
+                onTap: _loading
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                        _refresh();
+                      },
+              ),
+              ListTile(
                 leading: const Icon(Icons.swap_horiz),
-                title: const Text('换桌'),
+                title: Text(context.l10n.pokerChangeTable),
                 onTap: _loading
                     ? null
                     : () {
@@ -558,7 +633,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
-        title: Text('牌桌 ${widget.tableId}'),
+        title: Text(context.l10n.pokerTableTitle(widget.tableId)),
         backgroundColor: const Color(0xFF0F2942),
       ),
       body: Container(
@@ -577,14 +652,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                   : _error != null
                   ? _ErrorView(message: _error!, onRetry: _joinAndLoad)
                   : snapshot == null
-                  ? const Center(child: Text('暂无数据'))
+                    ? Center(child: Text(context.l10n.pokerNoData))
                   : _TableContent(
                       snapshot: snapshot,
-                      onRefresh: _refresh,
-                      onLeave: _leaveTable,
-                      loading: _loading,
-                      onBuyIn: _loading ? null : _showBuyIn,
-                      onSeat: _loading ? null : _showSeat,
                     ),
             ),
             if (showActions)
@@ -624,13 +694,18 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                '买入筹码（${snapshot.config.minBuyin}~${snapshot.config.maxBuyin}）',
+                context.l10n.pokerBuyInChipsRange(
+                  snapshot.config.minBuyin,
+                  snapshot.config.maxBuyin,
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(hintText: '输入买入金额'),
+                decoration: InputDecoration(
+                  hintText: context.l10n.pokerBuyInAmountHint,
+                ),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -638,7 +713,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                   final v = int.tryParse(controller.text.trim());
                   Navigator.of(ctx).pop(v);
                 },
-                child: const Text('确认买入'),
+                child: Text(context.l10n.pokerConfirmBuyIn),
               ),
             ],
           ),
@@ -655,7 +730,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         parser: (_) {},
         toastOnBusinessError: true,
       );
-      showToast('买入成功');
+      showToast(context.l10n.pokerBuyInSuccess);
       await _refresh();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -672,7 +747,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('选择座位'),
+          title: Text(context.l10n.pokerSelectSeat),
           content: SizedBox(
             width: double.maxFinite,
             child: Wrap(
@@ -691,7 +766,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('取消'),
+              child: Text(context.l10n.commonCancel),
             ),
           ],
         );
@@ -707,7 +782,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         parser: (_) {},
         toastOnBusinessError: true,
       );
-      showToast('坐下成功');
+      showToast(context.l10n.pokerSitDownSuccess);
       await _refresh();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -721,9 +796,11 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
     final ws = _ws;
     if (req == null) return;
     if (!_wsConnected || ws == null) {
-      showToast('网络未连接，无法操作');
+      showToast(context.l10n.pokerNetworkNotConnected);
       return;
     }
+
+    _cancelManualAutoFoldTimer();
 
     // 先隐藏动作栏，避免重复点击（后续会收到快照/事件刷新）。
     if (mounted) {
@@ -737,7 +814,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
     final req = _actionRequest;
     if (req == null) return;
     if (!_wsConnected || _ws == null) {
-      showToast('网络未连接，无法操作');
+      showToast(context.l10n.pokerNetworkNotConnected);
       return;
     }
     final controller = TextEditingController(text: req.minRaiseTo.toString());
@@ -758,12 +835,14 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('加注到（最小 ${req.minRaiseTo}）'),
+              Text(context.l10n.pokerRaiseToMin(req.minRaiseTo)),
               const SizedBox(height: 12),
               TextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(hintText: '输入 raise_to 金额'),
+                decoration: InputDecoration(
+                  hintText: context.l10n.pokerRaiseToHint,
+                ),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -771,7 +850,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                   final v = int.tryParse(controller.text.trim());
                   Navigator.of(ctx).pop(v);
                 },
-                child: const Text('确认加注'),
+                child: Text(context.l10n.pokerConfirmRaise),
               ),
             ],
           ),
@@ -781,7 +860,7 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
 
     if (amount == null) return;
     if (amount < req.minRaiseTo) {
-      showToast('加注金额不能小于最小加注');
+      showToast(context.l10n.pokerRaiseAmountTooSmall);
       return;
     }
     _sendAction('raise_to', amount: amount);
@@ -791,19 +870,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
 class _TableContent extends StatelessWidget {
   const _TableContent({
     required this.snapshot,
-    required this.onRefresh,
-    required this.onLeave,
-    required this.loading,
-    required this.onBuyIn,
-    required this.onSeat,
   });
 
   final PokerTableSnapshot snapshot;
-  final VoidCallback onRefresh;
-  final VoidCallback onLeave;
-  final bool loading;
-  final VoidCallback? onBuyIn;
-  final VoidCallback? onSeat;
 
   @override
   Widget build(BuildContext context) {
@@ -818,14 +887,16 @@ class _TableContent extends StatelessWidget {
         children: [
           Row(
             children: [
-              _Chip('盲注 ${config.sb}/${config.bb}'),
+              _Chip(context.l10n.pokerBlind(config.sb, config.bb)),
               const SizedBox(width: 12),
-              _Chip('最低买入 ${config.minBuyin}'),
+              _Chip(context.l10n.pokerMinBuyIn(config.minBuyin)),
               const SizedBox(width: 12),
-              _Chip('最高买入 ${config.maxBuyin}'),
+              _Chip(context.l10n.pokerMaxBuyIn(config.maxBuyin)),
               const Spacer(),
               if (snapshot.hand != null)
-                _Chip('当前阶段 ${snapshot.hand!.street ?? '-'}'),
+                _Chip(
+                  context.l10n.pokerCurrentStreet(snapshot.hand!.street ?? '-'),
+                ),
             ],
           ),
           const SizedBox(height: 16),
@@ -837,7 +908,7 @@ class _TableContent extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: [
-                  const _Chip('你的手牌'),
+                  _Chip(context.l10n.pokerYourHoleCards),
                   const SizedBox(width: 12),
                   ...snapshot.youHoleCards!.map(
                     (c) => Container(
@@ -877,44 +948,6 @@ class _TableContent extends StatelessWidget {
                   ),
                 )
                 .toList(),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onBuyIn,
-                  child: const Text('买入'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onSeat,
-                  child: const Text('坐下'),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: loading ? null : onRefresh,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('刷新牌桌'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: loading ? null : onLeave,
-                  icon: const Icon(Icons.logout),
-                  label: const Text('离开牌桌'),
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -964,7 +997,7 @@ class _TableCanvas extends StatelessWidget {
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 250),
               child: Text(
-                '底池: $pot',
+                context.l10n.pokerPot(pot),
                 key: ValueKey(pot),
                 style: const TextStyle(
                   color: Colors.white,
@@ -975,13 +1008,15 @@ class _TableCanvas extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             if (hand == null)
-              const Text(
-                '等待开局（至少需要 2 名玩家坐下）',
-                style: TextStyle(color: Colors.white70),
+              Text(
+                context.l10n.pokerWaitingForStart,
+                style: const TextStyle(color: Colors.white70),
               )
             else if (community.isEmpty)
               Text(
-                street == 'PREFLOP' ? '等待翻牌（请完成下注）' : '等待发牌...',
+                street == 'PREFLOP'
+                    ? context.l10n.pokerWaitingForFlop
+                    : context.l10n.pokerWaitingForDeal,
                 style: const TextStyle(color: Colors.white70),
               )
             else
@@ -1014,7 +1049,7 @@ class _TableCanvas extends StatelessWidget {
             if (actingSeat != null) ...[
               const SizedBox(height: 12),
               Text(
-                '行动位: 座位 $actingSeat',
+                context.l10n.pokerActingSeat(actingSeat),
                 style: const TextStyle(color: Colors.white70),
               ),
             ],
@@ -1038,7 +1073,7 @@ class _SeatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = seat.status.isEmpty ? '等待' : seat.status;
+    final subtitle = seat.status.isEmpty ? context.l10n.pokerWaiting : seat.status;
 
     return Container(
       width: 160,
@@ -1059,7 +1094,7 @@ class _SeatCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                '座位 ${seat.seatNo}',
+                context.l10n.pokerSeatNo(seat.seatNo),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -1072,7 +1107,7 @@ class _SeatCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            seat.username ?? '空位',
+            seat.username ?? context.l10n.pokerEmptySeat,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
@@ -1083,7 +1118,7 @@ class _SeatCard extends StatelessWidget {
           Text(subtitle, style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 6),
           Text(
-            '${seat.stack} 筹码',
+            context.l10n.pokerChipCount(seat.stack),
             style: const TextStyle(color: Color(0xFF9AD6FF)),
           ),
         ],
@@ -1131,7 +1166,10 @@ class _ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
-            ElevatedButton(onPressed: onRetry, child: const Text('重试')),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.commonRetry),
+            ),
           ],
         ),
       ),
@@ -1389,7 +1427,9 @@ class _ActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final canCall = request.toCall > 0;
-    final checkOrCallLabel = canCall ? '跟注 ${request.toCall}' : '过牌';
+    final checkOrCallLabel = canCall
+        ? context.l10n.pokerCallAmount(request.toCall)
+        : context.l10n.pokerCheck;
 
     return SafeArea(
       top: false,
@@ -1402,7 +1442,10 @@ class _ActionBar extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: OutlinedButton(onPressed: onFold, child: const Text('弃牌')),
+              child: OutlinedButton(
+                onPressed: onFold,
+                child: Text(context.l10n.pokerFold),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -1415,7 +1458,7 @@ class _ActionBar extends StatelessWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: onRaise,
-                child: const Text('加注'),
+                child: Text(context.l10n.pokerRaise),
               ),
             ),
           ],
