@@ -22,7 +22,11 @@ from services.subscription_tier import (
     require_user_min_tier,
     require_within_wallet_cap,
 )
+<<<<<<< HEAD
 from repositories.wallet import user_wallet_repository
+=======
+from settings.config import settings
+>>>>>>> d44b154f96300fad73ffe6646f7de918e6042bb3
 
 router = APIRouter()
 
@@ -159,6 +163,35 @@ async def quick_start(body: PokerQuickStartIn, user=DependAuth):
 
     table = await poker_manager.quick_start_table(max_chips=int(body.max_chips))
     await table.ensure_member(user_id=user.id, username=user.username)
+
+    # Optional automation helpers for testing.
+    if body.auto_buyin is not None or bool(body.auto_seat) or int(body.fill_bots or 0) > 0:
+        cfg = table.state.config
+        desired_buyin = int(body.auto_buyin) if body.auto_buyin is not None else int(body.max_chips)
+        # Clamp into table buy-in range.
+        buyin_amount = max(int(cfg.min_buyin), min(int(cfg.max_buyin), desired_buyin))
+        await require_within_wallet_cap(user_id=user.id, requested_chips=buyin_amount)
+        await table.buyin(user_id=user.id, amount=buyin_amount)
+
+        if bool(body.auto_seat):
+            seat_no = None
+            taken = {s.seat_no for s in table.state.seats.values()}
+            for s in range(1, int(table.state.max_players) + 1):
+                if s not in taken:
+                    seat_no = s
+                    break
+            if seat_no is not None:
+                await table.sit(user_id=user.id, seat_no=int(seat_no))
+
+        fill_bots = int(body.fill_bots or 0)
+        if fill_bots > 0:
+            # Bot injection is intended for local testing only.
+            if not bool(getattr(settings, "DEBUG", False)):
+                raise BusinessError(code=403, http_status=403, i18n_key="common.forbidden")
+
+            bot_buyin_raw = int(body.bot_buyin) if body.bot_buyin is not None else buyin_amount
+            bot_buyin = max(int(cfg.min_buyin), min(int(cfg.max_buyin), bot_buyin_raw))
+            await table.dev_fill_bots(count=fill_bots, buyin=bot_buyin)
     result = Success(data=PokerJoinOut(table_id=table.state.table_id).model_dump())
     return json.loads(result.body)
 

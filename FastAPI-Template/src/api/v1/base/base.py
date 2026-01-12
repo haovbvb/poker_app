@@ -231,6 +231,9 @@ async def get_userinfo(current_user: User = DependAuth):
     user_obj = await user_repository.get(id=user_id)
     user_dict = await user_obj.to_dict()
     user_dict["tier"] = tier_to_name(await get_user_effective_tier(user_id=user_id))
+
+    wallet = await user_wallet_repository.get_by_user_id(user_id=int(user_id))
+    user_dict["wallet_chips"] = int(wallet.chips) if wallet else 0
     return Success(data=user_dict)
 
 

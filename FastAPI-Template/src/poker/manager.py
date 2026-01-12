@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import random
 import time
 import uuid
 from contextlib import asynccontextmanager
@@ -17,6 +18,7 @@ from poker.hand_evaluator import rank_seven
 from poker.redis_lock import RedisLock
 from utils.cache import cache_manager
 from poker.lobby import find_lobby_level_for_max_chips
+from settings.config import settings
 
 
 @dataclass(slots=True)
@@ -132,6 +134,9 @@ class PokerTable:
         # Default: behave like production (auto-start hands when possible).
         # Dev scripts can disable this to stop after a single hand.
         self._auto_start_hands: bool = True
+
+        # Bot ids are negative and table-local.
+        self._next_bot_id: int = -1
 
     def set_auto_start_hands(self, enabled: bool) -> None:
         self._auto_start_hands = bool(enabled)
@@ -604,6 +609,7 @@ class PokerTable:
             self.state.members.pop(user_id, None)
             await self.emit("PLAYER_LEFT", {"user_id": user_id})
         if self._auto_start_hands:
+            await self._maybe_fill_bots_for_start()
             await self._maybe_start_hand()
         return cashout
 
@@ -658,6 +664,7 @@ class PokerTable:
                 {"user_id": user_id, "seat_no": seat_no, "stack": member.buyin},
             )
         if self._auto_start_hands:
+            await self._maybe_fill_bots_for_start()
             await self._maybe_start_hand()
 
     async def spectate(self, user_id: int) -> int:
@@ -686,6 +693,7 @@ class PokerTable:
             member.status = "spectator"
             await self.emit("PLAYER_SPECTATE", {"user_id": user_id})
         if self._auto_start_hands:
+            await self._maybe_fill_bots_for_start()
             await self._maybe_start_hand()
         return cashout
 
@@ -710,7 +718,108 @@ class PokerTable:
                 seat.status = "sitout"
             await self.emit("PLAYER_SITOUT", {"user_id": user_id})
         if self._auto_start_hands:
+            await self._maybe_fill_bots_for_start()
             await self._maybe_start_hand()
+
+    def _bot_target_players(self) -> int:
+        try:
+            target = int(getattr(settings, "POKER_BOTS_TARGET_PLAYERS", 2))
+        except Exception:
+            target = 2
+        return max(2, min(int(self.state.max_players), target))
+
+    def _bots_enabled(self) -> bool:
+        return bool(getattr(settings, "POKER_BOTS_ENABLED", False))
+
+    async def _maybe_fill_bots_for_start(self) -> None:
+        """人数不够时自动补位机器人，让单人也能开局。
+
+        - 机器人用负数 user_id 表示
+        - 仅在当前没有进行中的 hand 时补位
+        - 仅当桌上至少存在 1 个真人（user_id > 0）的活跃座位时补位
+        """
+
+        if not self._bots_enabled():
+            return
+
+        async with self._locked_state():
+            if self.state.hand is not None:
+                return
+
+            active = self._active_seat_nos()
+            if not active:
+                return
+
+            human_active = [s for s in active if int(self.state.seats[s].user_id) > 0]
+            if not human_active:
+                return
+
+            target_players = self._bot_target_players()
+            need = max(0, int(target_players) - int(len(active)))
+            if need <= 0:
+                return
+
+            cfg = self.state.config
+            bot_buyin = int(getattr(settings, "POKER_BOTS_BUYIN", 0) or 0)
+            if bot_buyin <= 0:
+                # Default bot stack should be large enough to post blinds and still act.
+                # If we default to min_buyin (which can be very small in tests), the bot
+                # may become all-in on the blind and never generate actions.
+                bot_buyin = max(int(cfg.min_buyin), int(cfg.bb) * 2)
+            bot_buyin = max(int(cfg.min_buyin), min(int(cfg.max_buyin), int(bot_buyin)))
+
+            prefix = str(getattr(settings, "POKER_BOTS_USERNAME_PREFIX", "bot") or "bot")
+            await self._fill_bots_locked(count=need, buyin=bot_buyin, username_prefix=prefix)
+
+    async def _fill_bots_locked(self, *, count: int, buyin: int, username_prefix: str) -> list[int]:
+        """在持有 table lock 的情况下创建并坐下机器人，避免中途触发 auto-start。"""
+
+        bot_ids: list[int] = []
+        count_i = max(0, int(count))
+        if count_i <= 0:
+            return bot_ids
+
+        buyin_i = int(buyin)
+        max_players = int(self.state.max_players)
+
+        for _ in range(count_i):
+            taken = set(self.state.seats.keys())
+            seat_no: int | None = None
+            for s in range(1, max_players + 1):
+                if s not in taken:
+                    seat_no = s
+                    break
+            if seat_no is None:
+                break
+
+            bot_id = int(self._next_bot_id)
+            self._next_bot_id -= 1
+
+            username = f"{username_prefix}_{abs(bot_id)}"
+            self.state.members[bot_id] = MemberState(
+                user_id=bot_id,
+                username=username,
+                status="seated",
+                buyin=buyin_i,
+                seat_no=seat_no,
+            )
+            self.state.seats[seat_no] = SeatState(
+                seat_no=seat_no,
+                user_id=bot_id,
+                username=username,
+                stack=buyin_i,
+                status="seated",
+            )
+
+            await self.emit("PLAYER_JOINED", {"user_id": bot_id, "username": username})
+            await self.emit("BUYIN_OK", {"user_id": bot_id, "amount": buyin_i})
+            await self.emit(
+                "PLAYER_SEATED",
+                {"user_id": bot_id, "seat_no": seat_no, "stack": buyin_i},
+            )
+            bot_ids.append(bot_id)
+
+        return bot_ids
 
     async def _force_fold_locked(self, seat_no: int, *, reason: str) -> None:
         hand = self.state.hand
@@ -1049,6 +1158,108 @@ class PokerTable:
                 "street": hand.street,
             },
         )
+
+        # Dev/testing: auto-act for bot users (user_id < 0) to keep hands flowing.
+        if int(seat.user_id) < 0:
+            asyncio.create_task(
+                self._bot_auto_act_if_needed(
+                    user_id=int(seat.user_id),
+                    expected_hand_id=str(hand.hand_id),
+                    expected_action_token=int(hand.action_token),
+                )
+            )
+
+    async def _bot_auto_act_if_needed(
+        self,
+        *,
+        user_id: int,
+        expected_hand_id: str,
+        expected_action_token: int,
+    ) -> None:
+        # Yield once to let the current lock section finish.
+        await asyncio.sleep(0)
+
+        delay_ms = int(getattr(settings, "POKER_BOTS_ACTION_DELAY_MS", 0) or 0)
+        if delay_ms > 0:
+            await asyncio.sleep(delay_ms / 1000.0)
+
+        try:
+            async with self._lock:
+                hand = self.state.hand
+                if hand is None:
+                    return
+                if str(hand.hand_id) != str(expected_hand_id):
+                    return
+                if int(hand.action_token) != int(expected_action_token):
+                    return
+
+                seat = self.state.seats.get(int(hand.acting_seat))
+                if seat is None or int(seat.user_id) != int(user_id):
+                    return
+
+                ps = hand.players.get(int(hand.acting_seat))
+                if ps is None or ps.folded or ps.all_in:
+                    return
+
+                to_call = max(0, int(hand.current_bet) - int(ps.committed_round))
+                min_raise_to = max(0, int(hand.min_raise_to))
+                can_raise = (
+                    int(seat.stack) > 0
+                    and (int(ps.committed_round) + int(seat.stack)) >= int(min_raise_to)
+                    and int(min_raise_to) > 0
+                )
+
+                raise_prob = float(getattr(settings, "POKER_BOTS_RAISE_PROB", 0.10) or 0.10)
+                fold_prob = float(
+                    getattr(settings, "POKER_BOTS_FOLD_PROB_FACING_BET", 0.20) or 0.20
+                )
+
+                rng = random.Random(f"{hand.hand_id}:{user_id}:{hand.action_token}")
+                action: str
+                amount: int | None
+
+                if to_call == 0:
+                    if can_raise and rng.random() < raise_prob:
+                        action, amount = "raise_to", int(min_raise_to)
+                    else:
+                        action, amount = "check", None
+                else:
+                    if rng.random() < fold_prob:
+                        action, amount = "fold", None
+                    elif can_raise and rng.random() < raise_prob:
+                        action, amount = "raise_to", int(min_raise_to)
+                    else:
+                        action, amount = "call", None
+
+            await self.handle_action(
+                user_id=user_id,
+                action=action,
+                amount=amount,
+                client_action_id=None,
+                action_token=expected_action_token,
+                is_auto=True,
+            )
+        except Exception:
+            # Best-effort; ignore if state moved on.
+            return
+
+    async def dev_fill_bots(
+        self,
+        *,
+        count: int,
+        buyin: int,
+        username_prefix: str = "bot",
+    ) -> list[int]:
+        """Dev/testing helper: create and seat bot players.
+
+        Bots are represented by negative user_ids (e.g., -1, -2, ...).
+        """
+        async with self._locked_state():
+            return await self._fill_bots_locked(
+                count=int(count),
+                buyin=int(buyin),
+                username_prefix=str(username_prefix),
+            )
 
     async def handle_action(
         self,

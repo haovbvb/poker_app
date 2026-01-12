@@ -139,6 +139,22 @@ class Settings(BaseSettings):
         os.getenv("BANKRUPTCY_PROMPT_SUBSCRIBE_STREAK_DAYS", "3")
     )
 
+    # Poker bots (陪玩/补位机器人)
+    # 默认关闭；如需开启可在环境变量中设置 POKER_BOTS_ENABLED=true
+    POKER_BOTS_ENABLED: bool = False
+    # 当桌上已有真人且活跃人数不足时，自动补到的目标人数（至少 2，最多 max_players）
+    POKER_BOTS_TARGET_PLAYERS: int = int(os.getenv("POKER_BOTS_TARGET_PLAYERS", "2"))
+    # 机器人补位买入；<=0 表示使用桌子的 min_buyin
+    POKER_BOTS_BUYIN: int = int(os.getenv("POKER_BOTS_BUYIN", "0"))
+    # 机器人行动延迟（毫秒），让节奏更自然；测试可设为 0
+    POKER_BOTS_ACTION_DELAY_MS: int = int(os.getenv("POKER_BOTS_ACTION_DELAY_MS", "0"))
+    # 简单策略参数（并非真正 AI）：
+    POKER_BOTS_RAISE_PROB: float = float(os.getenv("POKER_BOTS_RAISE_PROB", "0.10"))
+    POKER_BOTS_FOLD_PROB_FACING_BET: float = float(
+        os.getenv("POKER_BOTS_FOLD_PROB_FACING_BET", "0.20")
+    )
+    POKER_BOTS_USERNAME_PREFIX: str = os.getenv("POKER_BOTS_USERNAME_PREFIX", "bot")
+
     # Apple StoreKit / App Store Server
     APPLE_BUNDLE_ID: str = os.getenv("APPLE_BUNDLE_ID", "")
 

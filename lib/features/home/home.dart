@@ -308,7 +308,13 @@ Future<void> _onQuickStart(BuildContext context) async {
   try {
     final resp = await api.post<Map<String, dynamic>>(
       ApiPath.v1PokerTablesQuickStart,
-      data: {'max_chips': defaultBuyIn},
+      data: {
+        'max_chips': defaultBuyIn,
+        // 测试：自动买入/坐下/补一个机器人，对局可持续自动进行。
+        'auto_buyin': defaultBuyIn,
+        'auto_seat': true,
+        'fill_bots': 1,
+      },
       parser: (json) => Map<String, dynamic>.from(json as Map),
     );
 
@@ -318,7 +324,7 @@ Future<void> _onQuickStart(BuildContext context) async {
       return;
     }
 
-    AppRouter.pushGame(tableId);
+    AppRouter.pushGame(tableId, autoPlay: true);
   } catch (e) {
     showToast('快速开始失败: $e');
   }
