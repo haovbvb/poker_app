@@ -42,25 +42,6 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
   bool _autoSeatInProgress = false;
   int _autoSeatLastAttemptMs = 0;
 
-  Future<void> _standUp() async {
-    setState(() => _loading = true);
-    try {
-      await _api.post<void>(
-        ApiPath.v1PokerTableSpectate(widget.tableId),
-        parser: (_) {},
-        toastOnBusinessError: true,
-      );
-      if (mounted) {
-        showToast(context.l10n.pokerStandUpDone);
-      }
-      await _refresh();
-    } catch (e) {
-      setState(() => _error = e.toString());
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
   Future<void> _changeTable() async {
     final l10n = context.l10n;
     const fallbackMaxChips = 1000000;
@@ -515,7 +496,8 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
                     : () {
                         Navigator.of(context).pop();
                         if (isSeated) {
-                          _standUp();
+                          // 按需求：站起默认弃牌，并离开当前桌；重新开始请进入新的牌桌。
+                          _leaveTable();
                           return;
                         }
                         final buyin =
