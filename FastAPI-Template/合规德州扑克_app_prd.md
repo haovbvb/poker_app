@@ -321,17 +321,65 @@
 
 ### 5.1 已有接口（当前仓库）
 
-- `POST /api/v1/access_token`：登录获取 token（返回包含 `tier`）
+> 说明：以下为“当前代码仓库已实现并可联调”的接口清单（按模块分组）。
+
+**登录/会话（JWT）**
+
+- `POST /api/v1/base/access_token`：登录获取 token（返回包含 `tier`）
+- `POST /api/v1/base/refresh_token`：刷新 token
+- `POST /api/v1/base/logout`：退出登录（可选传入 refresh_token 做撤销）
 - `GET /api/v1/base/userinfo`：查看用户信息（返回包含 `tier`）
+- `GET /api/v1/base/health`：健康检查
+- `GET /api/v1/base/version`：版本信息
+
+**订阅（IAP 验单 / Webhook）**
+
 - `GET /api/v1/subscriptions/me`：获取我的订阅快照列表
-- `POST /api/v1/subscriptions/verify`：订阅验单并更新快照
-- `POST /api/v1/subscriptions/webhooks/apple`：Apple 回调入口
-- `POST /api/v1/subscriptions/webhooks/google`：Google 回调入口
-- `POST /api/v1/hands/upload`：上传牌谱（MVP：仅存储，简单解析 Hand ID）
+- `POST /api/v1/subscriptions/verify`：订阅验单并更新快照（幂等）
+- `POST /api/v1/subscriptions/webhooks/apple`：Apple 回调入口（支持 `X-Webhook-Secret`）
+- `POST /api/v1/subscriptions/webhooks/google`：Google 回调入口（支持 `X-Webhook-Secret`）
+
+**德州扑克（牌桌 / 匹配 / 事件 / WebSocket）**
+
+- `GET /api/v1/poker/tables/lobby_levels`：大厅桌档位（按筹码区间 + 是否 VIP）
+- `POST /api/v1/poker/tables/quick_start`：快速开始（按 `max_chips` 匹配/创建桌）
+- `GET /api/v1/poker/tables/list`：牌桌列表
+- `POST /api/v1/poker/tables/create`：创建牌桌（当前实现：需登录；实际线上建议仅管理端开放）
+- `GET /api/v1/poker/tables/{table_id}/config`：牌桌规则配置
+- `GET /api/v1/poker/tables/{table_id}`：牌桌快照（含你自己的私牌）
+- `GET /api/v1/poker/tables/{table_id}/events?since_seq=0&limit=200`：事件增量回放（HTTP 断线补偿）
+- `POST /api/v1/poker/tables/{table_id}/join`：进入牌桌（默认观战）
+- `POST /api/v1/poker/tables/{table_id}/leave`：离开牌桌
+- `POST /api/v1/poker/tables/{table_id}/buyin`：买入/带入筹码（含钱包 cap + VIP 等级校验）
+- `POST /api/v1/poker/tables/{table_id}/seat`：坐下
+- `POST /api/v1/poker/tables/{table_id}/spectate`：切换观战
+- `POST /api/v1/poker/tables/{table_id}/sitout`：坐出
+- `WS /api/v1/poker/tables/{table_id}/ws`：牌桌实时事件（支持 RESUME 补发）
+
+**每日奖励**
+
+- `GET /api/v1/rewards/daily`：每日奖励状态（返回 `wallet_chips/wallet_cap/can_claim/next_reset_at`）
+- `POST /api/v1/rewards/daily/claim`：领取每日奖励（返回 `wallet_before/after`）
+
+**破产救济**
+
+- `GET /api/v1/welfare/bankruptcy/status`：破产救济状态（含 `consecutive_claim_days/should_prompt_subscribe`）
+- `POST /api/v1/welfare/bankruptcy/claim`：领取破产救济（要求 `client_request_id` 幂等）
+
+**牌谱与成长数据（Analysis/Growth）**
+
+- `POST /api/v1/hands/upload`：上传牌谱（存储 + 基础解析）
 - `GET /api/v1/hands`：获取我的牌谱列表
 - `GET /api/v1/growth/stats`：成长数据统计（全量 + 近30日）
-- `GET /api/v1/rewards/daily`：每日奖励状态
-- `POST /api/v1/rewards/daily/claim`：领取每日奖励
+
+**系统通知/公告（消息）**
+
+- `GET /api/v1/messages/list`：消息列表（支持 `unread_only/type/page/page_size`）
+- `GET /api/v1/messages/unread_count`：未读数量
+- `POST /api/v1/messages/{message_id}/read`：标记已读
+- `POST /api/v1/messages/read_all`：全部标记已读
+- `DELETE /api/v1/messages/{message_id}`：删除/隐藏消息
+- `POST /api/v1/messages/create`：新增消息（后台权限）
 
 `POST /api/v1/hands/upload` 请求示例（JSON）：
 
@@ -344,9 +392,75 @@
 
 ### 5.2 建议新增/补齐（与 PRD 对齐）
 
-- AI 复盘/深度分析相关接口：定义具体路由、请求参数、权限等级门槛（Pro/Gold/…）
-- 成长数据面板接口：定义指标口径与返回结构
-- 破产救济接口：`GET /api/v1/welfare/bankruptcy/status`、`POST /api/v1/welfare/bankruptcy/claim`
+> 目标：达到“可上线”的最小标准（用户能注册/登录、能稳定玩牌、筹码闭环正确、订阅闭环正确、可运营可追溯）。
+
+**P0（上线阻断，必须补齐）**
+
+1) **账号注册/找回/合规注销**（当前仓库缺失注册与用户侧密码管理接口）
+
+- `POST /api/v1/base/register`
+  - 入参：`username/email/password`（具体字段与校验规则需定稿）
+  - 出参：`user_id/username` + 初始 `tier=normal` + token（可选）
+- `POST /api/v1/base/update_password`（用户侧修改密码，需登录）
+- `POST /api/v1/base/request_password_reset` + `POST /api/v1/base/confirm_password_reset`（若上线范围包含找回密码）
+- `POST /api/v1/base/delete_account`（合规：账号注销/删除请求；最小实现可“软删除 + 冷静期 + 审计”）
+
+2) **钱包（筹码）闭环与账本**（当前实现仅有“上限校验 + 发放”，缺少“买入扣款/离桌结算/明细”）
+
+- `GET /api/v1/wallet/me`
+  - 出参：`wallet_chips/wallet_cap/tier/server_time`（大厅/个人中心展示用）
+- `GET /api/v1/wallet/ledger`（可选但强烈建议：上线后排查纠纷/风控必备）
+  - 出参：分页列表：`type(delta, before, after, ref_id, created_at)`
+- **德州买入/离桌与钱包对账口径（必须落地）**
+  - `POST /api/v1/poker/tables/{table_id}/buyin`：需要将 `amount` 从 `user_wallet.chips` 扣减（不足则 403/400），并写入账本
+  - `POST /api/v1/poker/tables/{table_id}/leave`：需要将玩家在桌面剩余 `stack` 自动结算回 `user_wallet.chips`（并写入账本），否则玩家会“离桌丢筹码”
+  - `POST /api/v1/poker/tables/{table_id}/spectate`：若从 seated → spectator，也需要明确是否触发结算（建议：触发）
+
+3) **断线重连协议定稿（客户端可实现）**（代码已实现，但 PRD 需要补齐“联调口径”）
+
+- WS 建议口径（当前实现已支持）：
+  - `PING` → `PONG`
+  - `RESUME {last_seq}`：服务端补发 `seq > last_seq` 的事件；若无事件则返回 `TABLE_SNAPSHOT`
+  - `ACTION {action_token, action, amount?, client_action_id?}`：出错返回 `type=ERROR`（不强制断开）
+- HTTP 补偿：`GET /api/v1/poker/tables/{table_id}/events?since_seq=...`
+
+4) **公平性/可审计事件字段对齐**（代码已实现 commit-reveal，但 PRD 事件集合需与实现一致）
+
+- 建议在“手牌事件流最小集合”中明确以下事件与字段：
+  - `HAND_SEED_COMMIT {hand_id, algo_version, server_seed_hash}`
+  - `HAND_DECK_COMMIT {hand_id, deck_hash, used_player_ids}`
+  - `HAND_SEED_REVEALED {hand_id, algo_version, server_seed_hash, server_seed, deck_hash}`
+  - `HOLE_CARDS_DEALT` 为私有事件：本人 `cards`，他人只见 `count`
+
+5) **复盘/分析（与订阅权益匹配）**（PRD 宣称“AI 分析/复盘/深度分析”，但目前仅有上传牌谱与成长统计）
+
+- 最小可上线方案二选一：
+  - A）若上线必须包含 AI/复盘：补齐接口与权限门槛（并在服务端做限流/排队）
+  - B）若上线不包含 AI：需要下调 PRD/订阅权益文案，避免“宣传与能力不一致”
+
+若选 A，建议接口：
+
+- `POST /api/v1/analysis/review`：简版复盘（Pro+ 或普通也可，按产品表定）
+  - 入参：`hand_id` 或 `raw_content`（二选一）
+  - 出参：关键节点列表（street、action、建议、标签 Good/Bad/Mistake）
+- `POST /api/v1/analysis/deep`：深度分析（Diamond/SVIP）
+- `GET /api/v1/analysis/jobs/{job_id}`：异步任务结果（避免移动端超时）
+
+**P1（强烈建议，接近上线必做/运营必备）**
+
+1) **举报/封禁/风控最小闭环**（当前缺失相关接口）
+
+- `POST /api/v1/moderation/report`：举报玩家（原因、证据、table_id/hand_id 可选）
+- `POST /api/v1/moderation/block` / `DELETE /api/v1/moderation/block`：拉黑（可选）
+- 管理端：`POST /api/v1/moderation/ban` / `POST /api/v1/moderation/unban`：封禁/解封（含时长与理由）
+
+2) **运营配置下发（避免每次改档位都发版）**
+
+- `GET /api/v1/config/runtime`：下发 lobby 档位、订阅权益文案开关、活动开关、时区等（MVP 可只返回 lobby_levels + tiers 配置）
+
+3) **关键链路审计与追踪**
+
+- 最小要求：登录、验单、入桌、买入、离桌结算、每日奖励、救济，均写可查询的审计/账本（至少数据库留痕）
 
 ---
 

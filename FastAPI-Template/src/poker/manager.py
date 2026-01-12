@@ -580,11 +580,12 @@ class PokerTable:
             )
             await self.emit("PLAYER_JOINED", {"user_id": user_id, "username": username})
 
-    async def leave(self, user_id: int) -> None:
+    async def leave(self, user_id: int) -> int:
+        cashout = 0
         async with self._locked_state():
             member = self.state.members.get(user_id)
             if not member:
-                return
+                return 0
 
             if member.seat_no is not None and self.state.hand is not None:
                 ps = self.state.hand.players.get(member.seat_no)
@@ -596,11 +597,15 @@ class PokerTable:
                     await self._force_fold_locked(member.seat_no, reason="leave")
 
             if member.seat_no is not None:
+                seat = self.state.seats.get(member.seat_no)
+                if seat is not None:
+                    cashout = max(0, int(seat.stack))
                 self.state.seats.pop(member.seat_no, None)
             self.state.members.pop(user_id, None)
             await self.emit("PLAYER_LEFT", {"user_id": user_id})
         if self._auto_start_hands:
             await self._maybe_start_hand()
+        return cashout
 
     async def buyin(self, user_id: int, amount: int) -> None:
         async with self._locked_state():
@@ -655,7 +660,8 @@ class PokerTable:
         if self._auto_start_hands:
             await self._maybe_start_hand()
 
-    async def spectate(self, user_id: int) -> None:
+    async def spectate(self, user_id: int) -> int:
+        cashout = 0
         async with self._locked_state():
             member = self.state.members.get(user_id)
             if not member:
@@ -671,12 +677,17 @@ class PokerTable:
                     await self._force_fold_locked(member.seat_no, reason="spectate")
 
             if member.seat_no is not None:
+                seat = self.state.seats.get(member.seat_no)
+                if seat is not None:
+                    cashout = max(0, int(seat.stack))
                 self.state.seats.pop(member.seat_no, None)
                 member.seat_no = None
+                member.buyin = 0
             member.status = "spectator"
             await self.emit("PLAYER_SPECTATE", {"user_id": user_id})
         if self._auto_start_hands:
             await self._maybe_start_hand()
+        return cashout
 
     async def sitout(self, user_id: int) -> None:
         async with self._locked_state():

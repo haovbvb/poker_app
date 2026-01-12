@@ -13,6 +13,7 @@ from .subscriptions import subscriptions_router
 from .rewards import rewards_router
 from .welfare import welfare_router
 from .analysis import router as analysis_router
+from .wallet import wallet_router
 
 v1_router = APIRouter()
 
@@ -45,5 +46,8 @@ v1_router.include_router(rewards_router, prefix="/rewards")
 
 # Welfare / bankruptcy relief - requires JWT auth
 v1_router.include_router(welfare_router, prefix="/welfare")
+
+# Wallet - requires JWT auth
+v1_router.include_router(wallet_router, prefix="/wallet")
 
 __all__ = ["v1_router"]

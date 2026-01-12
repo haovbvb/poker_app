@@ -17,9 +17,12 @@ from schemas.poker import (
 )
 from services.subscription_tier import (
     SubscriptionTier,
+    TIER_POLICY,
+    get_user_effective_tier,
     require_user_min_tier,
     require_within_wallet_cap,
 )
+from repositories.wallet import user_wallet_repository
 
 router = APIRouter()
 
@@ -332,7 +335,14 @@ async def join_table(table_id: str, user=DependAuth):
 )
 async def leave_table(table_id: str, user=DependAuth):
     table = await poker_manager.get_table(table_id)
-    await table.leave(user_id=user.id)
+
+    cashout = await table.leave(user_id=user.id)
+    if cashout > 0:
+        wallet = await user_wallet_repository.get_or_create(user_id=user.id)
+        tier_enum = await get_user_effective_tier(user_id=user.id)
+        cap = int(TIER_POLICY[tier_enum].wallet_chip_cap)
+        wallet.chips = min(int(wallet.chips) + int(cashout), cap)
+        await wallet.save()
     result = Success(data=None)
     return json.loads(result.body)
 
@@ -353,6 +363,31 @@ async def buyin(table_id: str, body: PokerBuyInIn, user=DependAuth):
     if lvl is not None and lvl.is_vip:
         await require_user_min_tier(user_id=user.id, required=SubscriptionTier.PRO, reason="vip_table")
     await table.ensure_member(user_id=user.id, username=user.username)
+
+    # Validate buyin range before wallet mutation.
+    cfg = table.state.config
+    if int(body.amount) < int(cfg.min_buyin) or int(body.amount) > int(cfg.max_buyin):
+        raise BusinessError(
+            code=400,
+            http_status=400,
+            i18n_key="poker.buyin_out_of_range",
+            params={"min": int(cfg.min_buyin), "max": int(cfg.max_buyin)},
+        )
+
+    # Wallet debit
+    wallet = await user_wallet_repository.get_or_create(user_id=user.id)
+    balance = int(wallet.chips)
+    need = int(body.amount)
+    if balance < need:
+        raise BusinessError(
+            code=400,
+            http_status=400,
+            i18n_key="wallet.insufficient_chips",
+            params={"balance": balance, "required": need},
+        )
+    wallet.chips = balance - need
+    await wallet.save()
+
     await table.buyin(user_id=user.id, amount=body.amount)
     result = Success(data=None)
     return json.loads(result.body)
@@ -381,7 +416,14 @@ async def seat(table_id: str, body: PokerSeatIn, user=DependAuth):
 async def spectate(table_id: str, user=DependAuth):
     table = await poker_manager.get_table(table_id)
     await table.ensure_member(user_id=user.id, username=user.username)
-    await table.spectate(user_id=user.id)
+
+    cashout = await table.spectate(user_id=user.id)
+    if cashout > 0:
+        wallet = await user_wallet_repository.get_or_create(user_id=user.id)
+        tier_enum = await get_user_effective_tier(user_id=user.id)
+        cap = int(TIER_POLICY[tier_enum].wallet_chip_cap)
+        wallet.chips = min(int(wallet.chips) + int(cashout), cap)
+        await wallet.save()
     result = Success(data=None)
     return json.loads(result.body)
 

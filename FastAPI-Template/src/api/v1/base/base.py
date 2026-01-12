@@ -14,11 +14,13 @@ from core.ctx import CTX_USER_ID
 from core.dependency import DependAuth
 from models.admin import User
 from repositories.user import user_repository
+from repositories.wallet import user_wallet_repository
 from schemas.base import Fail, Success
 from schemas.login import (
     CredentialsSchema,
     JWTOut,
     LogoutRequest,
+    RegisterRequest,
     RefreshTokenRequest,
     TokenRefreshOut,
 )
@@ -97,6 +99,45 @@ async def login_access_token(request: Request, credentials: CredentialsSchema):
         refresh_token=refresh_token,
         username=user.username,
         tier=tier_to_name(await get_user_effective_tier(user_id=user.id)),
+        expires_in=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
+    return Success(data=data.model_dump())
+
+
+@router.post("/register", summary="用户注册", response_model=TokenResponse)
+@apply_rate_limit("10/minute")
+async def register(request: Request, body: RegisterRequest):
+    # 用户侧注册不应复用 /users/create：该路由是后台用户管理，且在 v1 路由层被 DependPermisson 保护
+    # 同时 UserCreate 包含 role_ids/is_superuser 等字段，不适合直接暴露给用户侧。
+
+    if await user_repository.get_by_username(body.username):
+        return Fail(code=400, error_key="user.username_exists", error_params=None)
+    if await user_repository.get_by_email(str(body.email)):
+        return Fail(code=400, error_key="user.email_exists", error_params=None)
+
+    from schemas.users import UserCreate
+
+    user = await user_repository.create_user(
+        obj_in=UserCreate(
+            username=body.username,
+            email=body.email,
+            password=body.password,
+            is_active=True,
+            is_superuser=False,
+            role_ids=[],
+            dept_id=0,
+        )
+    )
+
+    # 初始化钱包（默认 0）
+    await user_wallet_repository.get_or_create(user_id=int(user.id))
+
+    access_token, refresh_token = create_token_pair(user_id=int(user.id))
+    data = JWTOut(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        username=user.username,
+        tier=tier_to_name(await get_user_effective_tier(user_id=int(user.id))),
         expires_in=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
     return Success(data=data.model_dump())

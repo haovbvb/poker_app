@@ -1,6 +1,18 @@
 from httpx import AsyncClient
 
 
+async def _set_wallet(async_client: AsyncClient, headers: dict, chips: int) -> None:
+    me = await async_client.get("/api/v1/base/userinfo", headers=headers)
+    assert me.status_code == 200
+    user_id = me.json()["data"]["id"]
+
+    from repositories.wallet import user_wallet_repository
+
+    wallet = await user_wallet_repository.get_or_create(user_id=int(user_id))
+    wallet.chips = int(chips)
+    await wallet.save()
+
+
 class TestPokerTablesAPI:
     async def test_create_list_join_buyin_seat_flow(
         self, async_client: AsyncClient, admin_token: str, normal_user_token: str
@@ -52,6 +64,8 @@ class TestPokerTablesAPI:
         )
         assert r.status_code == 200
 
+        await _set_wallet(async_client, headers, chips=1_000_000)
+
         r = await async_client.post(
             f"/api/v1/poker/tables/{table_id}/buyin",
             headers=headers,
@@ -71,6 +85,8 @@ class TestPokerTablesAPI:
             f"/api/v1/poker/tables/{table_id}/join", headers=headers2
         )
         assert r.status_code == 200
+
+        await _set_wallet(async_client, headers2, chips=1_000_000)
 
         r = await async_client.post(
             f"/api/v1/poker/tables/{table_id}/buyin",
@@ -206,6 +222,8 @@ class TestPokerTablesAPI:
         # 让 t1 有 1 个 seated（占用容量但仍可匹配），t2 保持空桌。
         r = await async_client.post(f"/api/v1/poker/tables/{t1}/join", headers=headers_admin)
         assert r.status_code == 200
+
+        await _set_wallet(async_client, headers_admin, chips=10_000_000)
         r = await async_client.post(
             f"/api/v1/poker/tables/{t1}/buyin",
             headers=headers_admin,
@@ -326,6 +344,7 @@ class TestPokerTablesAPI:
         assert r.json().get("error_key") == "subscription.tier_insufficient"
 
         # 普通用户 buyin 也 403（即使未 join）
+        await _set_wallet(async_client, headers_user, chips=60_000_000)
         r = await async_client.post(
             f"/api/v1/poker/tables/{table_id}/buyin",
             headers=headers_user,
