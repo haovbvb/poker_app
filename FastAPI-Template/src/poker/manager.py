@@ -755,6 +755,10 @@ class PokerTable:
                 return
 
             target_players = self._bot_target_players()
+            # 需求：当桌上只有 1 个真人玩家时，自动补上至少 2 名机器人陪玩。
+            # 也就是：目标开局人数至少为 (1 真人 + 2 机器人) = 3。
+            if len(human_active) == 1:
+                target_players = max(target_players, min(int(self.state.max_players), 3))
             need = max(0, int(target_players) - int(len(active)))
             if need <= 0:
                 return
@@ -976,15 +980,13 @@ class PokerTable:
             deck = list(deck_mgr._deck or [])
             server_seed_hex = deck_mgr.reveal()
 
-            # Post antes
+            # PRD 2.1.2: 每局固定消耗（服务费/固定前注）。
+            # 口径：每手开始即从在座玩家扣减，不进入底池（不计入 committed / pot），用于控制筹码流速。
             if int(cfg.ante) > 0:
                 for seat_no in active:
-                    ante_amt = min(int(cfg.ante), self.state.seats[seat_no].stack)
-                    self.state.seats[seat_no].stack -= ante_amt
-                    players[seat_no].committed += ante_amt
-                    players[seat_no].committed_round += ante_amt
-                    pot += ante_amt
-                    if self.state.seats[seat_no].stack == 0:
+                    fee_amt = min(int(cfg.ante), int(self.state.seats[seat_no].stack))
+                    self.state.seats[seat_no].stack -= int(fee_amt)
+                    if int(self.state.seats[seat_no].stack) == 0:
                         players[seat_no].all_in = True
 
             # Post blinds
@@ -1753,18 +1755,24 @@ class PokerManager:
         """Pick a suitable table for the player based on max chips (buy-in range).
 
         Preference: existing table where min_buyin <= max_chips <= max_buyin and has capacity.
-        Tie-break: smaller max_buyin first, then fewer seated players.
+        Selection: prefer fewer seated players (emptier tables first); stable tie-break by created_at.
+        If there is only one eligible table, we proactively create a second one so future
+        quick-start calls can be randomly distributed.
         If none matches, create a new table sized to (min_buyin..max_buyin) around max_chips.
         """
 
         if max_chips <= 0:
             raise BusinessError(code=400, i18n_key="errors.bad_request")
 
-        best_id: str | None = None
-        best_key: tuple[int, int] | None = None  # (max_buyin, seated_count)
+        lvl = find_lobby_level_for_max_chips(max_chips)
 
         # Multi-instance: scan redis registry if available.
         if cache_manager.redis is not None:
+            candidates: list[tuple[int, float, str]] = []
+            first_cfg: TableConfig | None = None
+            first_name: str | None = None
+            first_max_players: int | None = None
+
             ids = await cache_manager.redis.smembers("poker:tables")
             for table_id in ids:
                 raw = await cache_manager.redis.get(f"poker:table:{table_id}:state")
@@ -1777,6 +1785,8 @@ class PokerManager:
                     seats = data.get("seats") or {}
                     max_players = int(t.get("max_players") or 0)
                     seated_count = len(seats)
+                    name = str(t.get("name") or "")
+                    created_at = float(t.get("created_at") or 0)
                     table_cfg = TableConfig(
                         sb=int(cfg.get("sb") or 1),
                         bb=int(cfg.get("bb") or 2),
@@ -1798,18 +1808,37 @@ class PokerManager:
                 if not self._is_match_for_max_chips(cfg=table_cfg, max_chips=max_chips):
                     continue
 
-                key = (int(table_cfg.max_buyin), int(seated_count))
-                if best_key is None or key < best_key:
-                    best_key = key
-                    best_id = str(table_id)
+                candidates.append((int(seated_count), float(created_at), str(table_id)))
+                if first_cfg is None:
+                    first_cfg = table_cfg
+                    first_name = name
+                    first_max_players = int(max_players)
 
-            if best_id:
-                return await self.get_table(best_id)
+            if len(candidates) == 1:
+                # Ensure at least two eligible tables for random distribution.
+                if lvl is not None:
+                    created = await self.create_table(
+                        name=lvl.name, max_players=9, config=lvl.config
+                    )
+                else:
+                    cfg_new = first_cfg or TableConfig()
+                    created = await self.create_table(
+                        name=str(first_name or "Texas Table"),
+                        max_players=int(first_max_players or 9),
+                        config=cfg_new,
+                    )
+                candidates.append((0, float(created.state.created_at or 0), created.state.table_id))
+
+            if candidates:
+                candidates.sort(key=lambda x: (x[0], x[1], x[2]))
+                chosen = candidates[0][2]
+                return await self.get_table(chosen)
 
         # Single-instance in-memory scan.
         async with self._lock:
             tables = list(self._tables.values())
 
+        local_candidates: list[PokerTable] = []
         for t in tables:
             cfg = t.state.config
             if not self._table_has_capacity(
@@ -1818,17 +1847,28 @@ class PokerManager:
                 continue
             if not self._is_match_for_max_chips(cfg=cfg, max_chips=max_chips):
                 continue
-            key = (int(cfg.max_buyin), int(len(t.state.seats)))
-            if best_key is None or key < best_key:
-                best_key = key
-                best_id = t.state.table_id
 
-        if best_id:
-            return await self.get_table(best_id)
+            local_candidates.append(t)
+
+        if len(local_candidates) == 1:
+            # Ensure at least two eligible tables for random distribution.
+            if lvl is not None:
+                created = await self.create_table(name=lvl.name, max_players=9, config=lvl.config)
+            else:
+                t0 = local_candidates[0]
+                created = await self.create_table(
+                    name=str(t0.state.name),
+                    max_players=int(t0.state.max_players),
+                    config=t0.state.config,
+                )
+            local_candidates.append(created)
+
+        if local_candidates:
+            local_candidates.sort(key=lambda t: (len(t.state.seats), float(t.state.created_at or 0), t.state.table_id))
+            return local_candidates[0]
 
         # No match: create a table.
         # Prefer PRD lobby levels when the bankroll falls into a defined range.
-        lvl = find_lobby_level_for_max_chips(max_chips)
         if lvl is not None:
             return await self.create_table(name=lvl.name, max_players=9, config=lvl.config)
 

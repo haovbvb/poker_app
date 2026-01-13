@@ -33,6 +33,9 @@ class ApiClient {
         baseUrl: _resolveBaseUrl(),
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
+        // 让业务错误(4xx/5xx)以正常响应返回，统一走后端 {code,msg,...} 协议，
+        // 避免 Dio 抛异常导致前端只能看到“服务器返回错误: 403”。
+        validateStatus: (status) => true,
         headers: {'Content-Type': 'application/json'},
       ),
     );
@@ -157,9 +160,12 @@ class ApiClient {
     bool notifyOnError = true,
   }) async {
     try {
+      // 后端对 `Content-Type: application/json` + 空 body 的 POST 有时会返回 400（JSON 解析失败）。
+      // 统一用空对象作为默认 body，避免离桌/登出等“无参数 POST”请求失败。
+      final payload = data ?? <String, dynamic>{};
       return await dio.post(
         path,
-        data: data,
+        data: payload,
         options: Options(
           extra: {'showHud': showHud, 'notifyOnError': notifyOnError},
         ),

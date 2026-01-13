@@ -18,7 +18,9 @@ final _currentUserInfoProvider = FutureProvider<CurrentUserInfo>((ref) async {
   );
 
   if (!resp.isSuccess || resp.result == null) {
-    throw Exception(resp.message.isNotEmpty ? resp.message : 'Failed to fetch user info');
+    throw Exception(
+      resp.message.isNotEmpty ? resp.message : 'Failed to fetch user info',
+    );
   }
 
   return CurrentUserInfo.fromJson(resp.result!);
@@ -167,8 +169,9 @@ class HomeTab extends ConsumerWidget {
                     const SizedBox(width: 12),
                     userInfoAsync.when(
                       data: (u) {
-                        final displayName =
-                            (u.alias ?? '').trim().isNotEmpty ? u.alias!.trim() : u.username;
+                        final displayName = (u.alias ?? '').trim().isNotEmpty
+                            ? u.alias!.trim()
+                            : u.username;
                         final tier = (u.tier ?? '').trim();
                         return Row(
                           children: [
@@ -475,18 +478,15 @@ class _BottomNavIcon extends StatelessWidget {
 }
 
 Future<void> _onQuickStart(BuildContext context) async {
-  const defaultBuyIn = 1000000;
   final api = ApiService();
 
   try {
     final resp = await api.post<Map<String, dynamic>>(
       ApiPath.v1PokerTablesQuickStart,
       data: {
-        'max_chips': defaultBuyIn,
-        // 测试：自动买入/坐下/补一个机器人，对局可持续自动进行。
-        'auto_buyin': defaultBuyIn,
+        // 不传任何筹码字段：由后端按钱包余额自动买入，并按需补机器人开局。
         'auto_seat': true,
-        'fill_bots': 1,
+        'fill_bots': 0,
       },
       parser: (json) => Map<String, dynamic>.from(json as Map),
     );

@@ -46,13 +46,20 @@ class PokerSeatIn(BaseModel):
 
 
 class PokerQuickStartIn(BaseModel):
-    max_chips: int = Field(ge=1, description="玩家最大筹码/最大可买入")
+    # NOTE: For the new A-mode quick-start UX, client does not need to pass any chip amount.
+    # The server will use the user's wallet balance as the buy-in and lobby matching basis.
+    # This field is kept for backward compatibility.
+    max_chips: int | None = Field(
+        default=None,
+        ge=1,
+        description="(可选) 玩家最大筹码/最大可买入；不传则使用钱包余额",
+    )
 
     # Dev/testing helpers (all optional)
     auto_buyin: int | None = Field(
         default=None,
         ge=1,
-        description="自动买入金额(可选)。若不传但 auto_seat=true，将使用 max_chips。",
+        description="自动买入金额(可选)。若不传，将使用钱包余额。",
     )
     auto_seat: bool = Field(default=False, description="是否自动坐下(可选)")
     fill_bots: int = Field(default=0, ge=0, le=8, description="自动补机器人数量(可选)")

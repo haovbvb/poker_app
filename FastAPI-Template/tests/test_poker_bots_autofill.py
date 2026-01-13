@@ -30,8 +30,10 @@ async def test_bots_autofill_starts_hand_with_single_human(monkeypatch: pytest.M
     await asyncio.sleep(0.05)
 
     assert table.state.hand is not None
-    assert len(table.state.hand.players) == 2
-    assert any(seat.user_id < 0 for seat in table.state.seats.values())
+    # 单真人时，至少补 2 个机器人 => 开局人数至少 3
+    assert len(table.state.hand.players) >= 3
+    bot_seats = [s for s in table.state.seats.values() if s.user_id < 0]
+    assert len(bot_seats) >= 2
 
     events = await table.fetch_events_since(0)
     assert any(

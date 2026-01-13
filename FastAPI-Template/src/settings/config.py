@@ -140,8 +140,9 @@ class Settings(BaseSettings):
     )
 
     # Poker bots (陪玩/补位机器人)
-    # 默认关闭；如需开启可在环境变量中设置 POKER_BOTS_ENABLED=true
-    POKER_BOTS_ENABLED: bool = False
+    # 默认开启（产品体验：单人入桌也能自动补 2 个机器人开局）；
+    # 如需关闭可在环境变量中设置 POKER_BOTS_ENABLED=false
+    POKER_BOTS_ENABLED: bool = True
     # 当桌上已有真人且活跃人数不足时，自动补到的目标人数（至少 2，最多 max_players）
     POKER_BOTS_TARGET_PLAYERS: int = int(os.getenv("POKER_BOTS_TARGET_PLAYERS", "2"))
     # 机器人补位买入；<=0 表示使用桌子的 min_buyin

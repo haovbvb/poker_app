@@ -81,9 +81,9 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
         ApiPath.v1PokerTablesQuickStart,
         data: {
           'max_chips': maxChips,
-          'auto_buyin': maxChips,
           'auto_seat': true,
-          'fill_bots': 1,
+          // 由后端按钱包余额自动买入，并按需补机器人。
+          'fill_bots': 0,
         },
         parser: (json) => Map<String, dynamic>.from(json as Map),
       );
@@ -410,17 +410,38 @@ class _GameTablePageState extends ConsumerState<GameTablePage> {
       await _ws?.disconnect();
       _ws?.dispose();
       _ws = null;
-      await _api.post<void>(
+
+      // 先发离桌请求（后端会强制弃牌并把桌上筹码结算回钱包）。
+      // 为了兼顾“强制返回大厅不卡住”，这里最多等待很短时间让请求更容易送达。
+      final leaveFuture = _api.post<void>(
         ApiPath.v1PokerTableLeave(widget.tableId),
         parser: (_) {},
-        toastOnBusinessError: true,
+        // 不要在离桌失败时弹 toast，避免“回大厅后又弹错”。
+        toastOnBusinessError: false,
+        notifyOnError: false,
+        showHud: false,
       );
-      if (!mounted) return;
-      showToast(l10n.pokerLeftTable);
-      if (!mounted) return;
-      AppRouter.goHome();
+      unawaited(leaveFuture);
+      try {
+        await Future.any([
+          leaveFuture,
+          Future<void>.delayed(const Duration(milliseconds: 400)),
+        ]);
+      } catch (_) {
+        // ignore
+      }
+
+      // 强制返回大厅，并触发大厅页面刷新用户信息（钱包余额）。
+      if (mounted) {
+        showToast(l10n.pokerLeftTable);
+        AppRouter.goHome(refresh: true);
+      }
     } catch (e) {
-      setState(() => _error = e.toString());
+      // 仍然强制返回大厅；错误仅记录到状态，避免阻塞导航。
+      if (mounted) {
+        setState(() => _error = e.toString());
+        AppRouter.goHome(refresh: true);
+      }
     } finally {
       if (mounted) {
         setState(() => _loading = false);

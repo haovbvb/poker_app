@@ -44,7 +44,8 @@ class AppRouter {
       GoRoute(
         path: homePath,
         name: 'home',
-        builder: (context, state) => const HomeTab(),
+        builder: (context, state) =>
+            HomeTab(key: ValueKey(state.uri.toString())),
       ),
       GoRoute(
         path: gamePath,
@@ -109,7 +110,14 @@ class AppRouter {
     refreshListenable: _GoRouterRefreshNotifier(authNotifierProvider),
   );
 
-  static void goHome() => router.go(homePath);
+  static void goHome({bool refresh = false}) {
+    if (!refresh) {
+      router.go(homePath);
+      return;
+    }
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    router.go('$homePath?r=$ts');
+  }
 
   static void goLogin() => router.go(loginPath);
   static void goSplash() => router.go(splashPath);

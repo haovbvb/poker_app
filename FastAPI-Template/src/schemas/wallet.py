@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class AdminWalletTopUpIn(BaseModel):
-    amount: int = Field(..., ge=1, description="充值筹码数量")
+    amount: int = Field(..., ge=1, description="本次增加的筹码数量（累加到钱包余额）")
     note: str | None = Field(default=None, max_length=200, description="备注")
 
 

@@ -1,6 +1,7 @@
 import json
 
 from fastapi import APIRouter
+from tortoise.transactions import in_transaction
 
 from core.dependency import DependAuth
 from poker.manager import TableConfig
@@ -26,6 +27,56 @@ from repositories.wallet import user_wallet_repository
 from settings.config import settings
 
 router = APIRouter()
+
+
+async def _wallet_debit_for_buyin(*, user_id: int, amount: int) -> None:
+    if int(amount) <= 0:
+        raise BusinessError(code=400, http_status=400, i18n_key="common.invalid_param")
+
+    async with in_transaction() as conn:
+        from models.wallet import UserWallet
+
+        wallet_locked = (
+            await UserWallet.select_for_update().using_db(conn).filter(user_id=user_id).first()
+        )
+        if not wallet_locked:
+            wallet_locked = UserWallet(user_id=user_id, chips=0)
+            await wallet_locked.save(using_db=conn)
+
+        balance = int(wallet_locked.chips)
+        need = int(amount)
+        if balance < need:
+            raise BusinessError(
+                code=400,
+                http_status=400,
+                i18n_key="wallet.insufficient_chips",
+                params={"balance": balance, "required": need},
+            )
+        wallet_locked.chips = balance - need
+        await wallet_locked.save(using_db=conn)
+
+
+async def _wallet_credit_cashout(*, user_id: int, amount: int) -> None:
+    if int(amount) <= 0:
+        return
+
+    tier_enum = await get_user_effective_tier(user_id=user_id)
+    cap = int(TIER_POLICY[tier_enum].wallet_chip_cap)
+
+    async with in_transaction() as conn:
+        from models.wallet import UserWallet
+
+        wallet_locked = (
+            await UserWallet.select_for_update().using_db(conn).filter(user_id=user_id).first()
+        )
+        if not wallet_locked:
+            wallet_locked = UserWallet(user_id=user_id, chips=0)
+            await wallet_locked.save(using_db=conn)
+
+        before = int(wallet_locked.chips)
+        after = min(before + int(amount), cap)
+        wallet_locked.chips = after
+        await wallet_locked.save(using_db=conn)
 
 
 def _ok_response_example(data):
@@ -141,9 +192,30 @@ async def create_table(body: PokerTableCreateIn):
     responses=_ok_response_example({"table_id": "tb_123"}),
 )
 async def quick_start(body: PokerQuickStartIn, user=DependAuth):
-    await require_within_wallet_cap(user_id=user.id, requested_chips=body.max_chips)
+    # 快速开始：按筹码区间(2.1.2)分配桌。
+    # - 若客户端传了 max_chips：用它决定分桌档位（允许钱包余额为 0，默认仅分桌/观战）。
+    # - 若未传 max_chips：回退使用钱包余额作为分桌依据（此时钱包必须 > 0）。
+    requested_max_chips = body.max_chips
 
-    lvl = find_lobby_level_for_max_chips(int(body.max_chips))
+    wallet_balance = 0
+    if requested_max_chips is None:
+        wallet = await user_wallet_repository.get_or_create(user_id=user.id)
+        wallet_balance = int(wallet.chips)
+        if wallet_balance <= 0:
+            raise BusinessError(
+                code=400,
+                http_status=400,
+                i18n_key="wallet.insufficient_chips",
+                params={"balance": wallet_balance, "required": 1},
+            )
+        requested_max_chips = int(wallet_balance)
+
+    requested_max_chips = int(requested_max_chips)
+
+    # 订阅限制：如果请求筹码超过钱包上限，提示订阅升级。
+    tier = await require_within_wallet_cap(user_id=user.id, requested_chips=requested_max_chips)
+
+    lvl = find_lobby_level_for_max_chips(int(requested_max_chips))
     if lvl is None:
         raise BusinessError(
             code=400,
@@ -155,20 +227,38 @@ async def quick_start(body: PokerQuickStartIn, user=DependAuth):
             },
         )
 
-    if lvl.is_vip:
+    if bool(lvl.is_vip):
         await require_user_min_tier(user_id=user.id, required=SubscriptionTier.PRO, reason="vip_table")
 
-    table = await poker_manager.quick_start_table(max_chips=int(body.max_chips))
+    # 关键：钳制到档位 max_buyin，避免 manager 误选到更高档。
+    max_chips_for_table = int(min(int(requested_max_chips), int(lvl.max_buyin)))
+    table = await poker_manager.quick_start_table(max_chips=int(max_chips_for_table))
     await table.ensure_member(user_id=user.id, username=user.username)
 
     # Optional automation helpers for testing.
     if body.auto_buyin is not None or bool(body.auto_seat) or int(body.fill_bots or 0) > 0:
         cfg = table.state.config
-        desired_buyin = int(body.auto_buyin) if body.auto_buyin is not None else int(body.max_chips)
-        # Clamp into table buy-in range.
-        buyin_amount = max(int(cfg.min_buyin), min(int(cfg.max_buyin), desired_buyin))
-        await require_within_wallet_cap(user_id=user.id, requested_chips=buyin_amount)
-        await table.buyin(user_id=user.id, amount=buyin_amount)
+        # 买入金额默认取 min(钱包余额, 请求 max_chips, 桌档位上限)。
+        if wallet_balance <= 0:
+            wallet = await user_wallet_repository.get_or_create(user_id=user.id)
+            wallet_balance = int(wallet.chips)
+        buyin_budget = int(min(int(wallet_balance), int(requested_max_chips)))
+        buyin_amount = int(min(int(buyin_budget), int(cfg.max_buyin)))
+        if buyin_amount < int(cfg.min_buyin) or buyin_amount > int(cfg.max_buyin):
+            raise BusinessError(
+                code=400,
+                http_status=400,
+                i18n_key="poker.buyin_out_of_range",
+                params={"min": int(cfg.min_buyin), "max": int(cfg.max_buyin)},
+            )
+
+        await _wallet_debit_for_buyin(user_id=user.id, amount=int(buyin_amount))
+        try:
+            await table.buyin(user_id=user.id, amount=buyin_amount)
+        except Exception:
+            # Best-effort refund if table buyin failed after wallet debit.
+            await _wallet_credit_cashout(user_id=user.id, amount=int(buyin_amount))
+            raise
 
         if bool(body.auto_seat):
             seat_no = None
@@ -180,15 +270,25 @@ async def quick_start(body: PokerQuickStartIn, user=DependAuth):
             if seat_no is not None:
                 await table.sit(user_id=user.id, seat_no=int(seat_no))
 
-        fill_bots = int(body.fill_bots or 0)
-        if fill_bots > 0:
+        # 机器人补位说明：
+        # - body.fill_bots / bot_buyin 仅用于本地测试（dev_fill_bots），生产环境禁止。
+        # - 生产环境的“自动补位机器人”由 table._maybe_fill_bots_for_start() 控制，
+        #   受 POKER_BOTS_ENABLED / POKER_BOTS_TARGET_PLAYERS 等配置开关约束。
+
+        fill_bots_req = int(body.fill_bots or 0)
+        if fill_bots_req > 0:
             # Bot injection is intended for local testing only.
             if not bool(getattr(settings, "DEBUG", False)):
                 raise BusinessError(code=403, http_status=403, i18n_key="common.forbidden")
 
             bot_buyin_raw = int(body.bot_buyin) if body.bot_buyin is not None else buyin_amount
             bot_buyin = max(int(cfg.min_buyin), min(int(cfg.max_buyin), bot_buyin_raw))
-            await table.dev_fill_bots(count=fill_bots, buyin=bot_buyin)
+            await table.dev_fill_bots(count=fill_bots_req, buyin=bot_buyin)
+
+        # 关键：sit 之后触发一次补位与开局检查，避免“人数够了但不开始”。
+        await table._maybe_fill_bots_for_start()
+        if table.state.hand is None:
+            await table._maybe_start_hand()
     result = Success(data=PokerJoinOut(table_id=table.state.table_id).model_dump())
     return json.loads(result.body)
 
@@ -368,11 +468,7 @@ async def leave_table(table_id: str, user=DependAuth):
 
     cashout = await table.leave(user_id=user.id)
     if cashout > 0:
-        wallet = await user_wallet_repository.get_or_create(user_id=user.id)
-        tier_enum = await get_user_effective_tier(user_id=user.id)
-        cap = int(TIER_POLICY[tier_enum].wallet_chip_cap)
-        wallet.chips = min(int(wallet.chips) + int(cashout), cap)
-        await wallet.save()
+        await _wallet_credit_cashout(user_id=user.id, amount=int(cashout))
     result = Success(data=None)
     return json.loads(result.body)
 
@@ -405,20 +501,13 @@ async def buyin(table_id: str, body: PokerBuyInIn, user=DependAuth):
         )
 
     # Wallet debit
-    wallet = await user_wallet_repository.get_or_create(user_id=user.id)
-    balance = int(wallet.chips)
-    need = int(body.amount)
-    if balance < need:
-        raise BusinessError(
-            code=400,
-            http_status=400,
-            i18n_key="wallet.insufficient_chips",
-            params={"balance": balance, "required": need},
-        )
-    wallet.chips = balance - need
-    await wallet.save()
-
-    await table.buyin(user_id=user.id, amount=body.amount)
+    await _wallet_debit_for_buyin(user_id=user.id, amount=int(body.amount))
+    try:
+        await table.buyin(user_id=user.id, amount=body.amount)
+    except Exception:
+        # Best-effort refund if table buyin failed after wallet debit.
+        await _wallet_credit_cashout(user_id=user.id, amount=int(body.amount))
+        raise
     result = Success(data=None)
     return json.loads(result.body)
 
@@ -449,11 +538,7 @@ async def spectate(table_id: str, user=DependAuth):
 
     cashout = await table.spectate(user_id=user.id)
     if cashout > 0:
-        wallet = await user_wallet_repository.get_or_create(user_id=user.id)
-        tier_enum = await get_user_effective_tier(user_id=user.id)
-        cap = int(TIER_POLICY[tier_enum].wallet_chip_cap)
-        wallet.chips = min(int(wallet.chips) + int(cashout), cap)
-        await wallet.save()
+        await _wallet_credit_cashout(user_id=user.id, amount=int(cashout))
     result = Success(data=None)
     return json.loads(result.body)
 

@@ -187,6 +187,89 @@ class TestPokerTablesAPI:
         body = r.json()
         assert body.get("error_key") == "poker.buyin_out_of_range"
 
+    async def test_hand_start_deducts_fixed_consumption(
+        self, async_client: AsyncClient, admin_token: str, normal_user_token: str, monkeypatch
+    ):
+        # 该用例只验证“每局固定消耗”扣费，不希望被自动补位机器人干扰座位与盲位。
+        from settings import settings
+
+        monkeypatch.setattr(settings, "POKER_BOTS_ENABLED", False, raising=False)
+
+        headers_admin = {"Authorization": f"Bearer {admin_token}"}
+        headers_user = {"Authorization": f"Bearer {normal_user_token}"}
+
+        # 设定一个易于断言的配置：ante 作为“每局固定消耗”。
+        buyin = 100
+        sb = 10
+        bb = 20
+        fee = 3
+
+        r = await async_client.post(
+            "/api/v1/poker/tables/create",
+            headers=headers_admin,
+            json={
+                "name": "FEE_T1",
+                "max_players": 6,
+                "config": {
+                    "sb": sb,
+                    "bb": bb,
+                    "ante": fee,
+                    "min_buyin": buyin,
+                    "max_buyin": buyin,
+                },
+            },
+        )
+        assert r.status_code == 200
+        table_id = r.json()["data"]["table_id"]
+
+        # 两个玩家 join + buyin + 坐下；第二个玩家坐下会触发自动开局。
+        await _set_wallet(async_client, headers_admin, chips=1_000_000)
+        await _set_wallet(async_client, headers_user, chips=1_000_000)
+
+        r = await async_client.post(f"/api/v1/poker/tables/{table_id}/join", headers=headers_admin)
+        assert r.status_code == 200
+        r = await async_client.post(
+            f"/api/v1/poker/tables/{table_id}/buyin",
+            headers=headers_admin,
+            json={"amount": buyin},
+        )
+        assert r.status_code == 200
+        r = await async_client.post(
+            f"/api/v1/poker/tables/{table_id}/seat",
+            headers=headers_admin,
+            json={"seat_no": 1},
+        )
+        assert r.status_code == 200
+
+        r = await async_client.post(f"/api/v1/poker/tables/{table_id}/join", headers=headers_user)
+        assert r.status_code == 200
+        r = await async_client.post(
+            f"/api/v1/poker/tables/{table_id}/buyin",
+            headers=headers_user,
+            json={"amount": buyin},
+        )
+        assert r.status_code == 200
+        r = await async_client.post(
+            f"/api/v1/poker/tables/{table_id}/seat",
+            headers=headers_user,
+            json={"seat_no": 2},
+        )
+        assert r.status_code == 200
+
+        snap = await async_client.get(f"/api/v1/poker/tables/{table_id}", headers=headers_admin)
+        assert snap.status_code == 200
+        data = snap.json()["data"]
+        seats_list = data["seats"]
+        seats_by_no = {str(s["seat_no"]): s for s in seats_list}
+        hand = data.get("hand")
+        assert hand is not None
+
+        # 固定消耗 fee：从每个参与本手的玩家 stack 扣除，但不进底池。
+        # 盲注扣款：以 hand.players[seat].committed 作为来源（避免假设按钮/盲注座位顺序）。
+        for seat_no in ("1", "2"):
+            committed = int(hand["players"][seat_no]["committed"])
+            assert int(seats_by_no[seat_no]["stack"]) == int(buyin - fee - committed)
+
     async def test_quick_start_assigns_table_by_max_chips(
         self, async_client: AsyncClient, admin_token: str, normal_user_token: str
     ):

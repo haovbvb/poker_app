@@ -19,6 +19,7 @@ os.environ["APP_ENV"] = "testing"
 os.environ["TESTING"] = "true"
 os.environ["DEBUG"] = "false"
 os.environ["DB_ENGINE"] = "sqlite"
+os.environ["POKER_BOTS_ENABLED"] = "false"
 os.environ["SWAGGER_UI_PASSWORD"] = os.environ.get(
     "SWAGGER_UI_PASSWORD", "test_password"
 )
